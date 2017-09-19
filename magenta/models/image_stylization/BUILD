@@ -86,6 +86,22 @@ py_binary(
 )
 
 py_binary(
+    name = "any_image_stylization_train",
+    srcs = ["any_image_stylization_train.py"],
+    srcs_version = "PY2AND3",
+    visibility = [
+        "//magenta/tools/pip:__subpackages__",
+    ],
+    deps = [
+        ":any_image_stylization_build_model",
+        ":image_utils",
+        ":learning",
+        ":model",
+        ":vgg",
+    ],
+)
+
+py_binary(
     name = "image_stylization_transform",
     srcs = ["image_stylization_transform.py"],
     srcs_version = "PY2AND3",
@@ -93,6 +109,20 @@ py_binary(
         "//magenta/tools/pip:__subpackages__",
     ],
     deps = [
+        ":image_utils",
+        ":learning",
+    ],
+)
+
+py_binary(
+    name = "any_image_stylization_transform",
+    srcs = ["any_image_stylization_transform.py"],
+    srcs_version = "PY2AND3",
+    visibility = [
+        "//magenta/tools/pip:__subpackages__",
+    ],
+    deps = [
+        ":any_image_stylization_build_model",
         ":image_utils",
         ":model",
     ],
@@ -127,6 +157,18 @@ py_library(
 )
 
 py_library(
+    name = "any_image_stylization_losses",
+    srcs = ["any_image_stylization_losses.py"],
+    srcs_version = "PY2AND3",
+    deps = [
+        ":learning",
+        ":vgg",
+        # numpy dep
+        # tensorflow dep
+    ],
+)
+
+py_library(
     name = "model",
     srcs = [
         "model.py",
@@ -137,6 +179,33 @@ py_library(
         # tensorflow dep
     ],
 )
+
+py_library(
+    name = "nza_model",
+    srcs = [
+        "nza_model.py",
+    ],
+    srcs_version = "PY2AND3",
+    deps = [
+        ":ops",
+        # tensorflow dep
+    ],
+)
+
+py_library(
+    name = "any_image_stylization_build_model",
+    srcs = [
+        "any_image_stylization_build_model.py",
+    ],
+    srcs_version = "PY2AND3",
+    deps = [
+        ":ops",
+        ":nza_model",
+        ":any_image_stylization_losses",
+        # tensorflow dep
+    ],
+)
+
 
 py_library(
     name = "ops",

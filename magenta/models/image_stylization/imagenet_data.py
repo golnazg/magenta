@@ -36,6 +36,7 @@ FLAGS = tf.app.flags.FLAGS
 
 
 # Basic model parameters.
+# tf.app.flags.DEFINE_string('imagenet_data_dir', '/placer/prod/home/distbelief/imagenet-tensorflow/imagenet-2012-tfrecord',
 tf.app.flags.DEFINE_string('imagenet_data_dir', '/tmp/imagenet-2012-tfrecord',
                            """Path to the ImageNet data, i.e. """
                            """TFRecord of Example protos.""")
@@ -94,9 +95,14 @@ class ImagenetData(object):
       ValueError: if there are not data_files matching the subset.
     """
     imagenet_data_dir = os.path.expanduser(FLAGS.imagenet_data_dir)
-    tf_record_pattern = os.path.join(imagenet_data_dir, '%s-*' % self.subset)
-    data_files = tf.gfile.Glob(tf_record_pattern)
-    if not data_files:
+    if tf.gfile.Exists(imagenet_data_dir):
+      tf_record_pattern = os.path.join(imagenet_data_dir, '%s-*' % self.subset)
+      print(tf_record_pattern)
+      print('-----------------------------------------')
+      data_files = tf.gfile.Glob(tf_record_pattern)
+    else:
+      print('-----------------------------------------++')
+    if not tf.gfile.Exists(imagenet_data_dir) or not data_files:
       print('No files found for dataset ImageNet/%s at %s' %
             (self.subset, imagenet_data_dir))
 

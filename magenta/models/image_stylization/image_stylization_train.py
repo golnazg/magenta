@@ -64,6 +64,9 @@ flags.DEFINE_string('train_dir', None,
 FLAGS = flags.FLAGS
 
 
+tf.logging.set_verbosity(tf.logging.INFO)
+
+
 def main(unused_argv=None):
   with tf.Graph().as_default():
     # Force all input processing onto CPU in order to reserve the GPU for the

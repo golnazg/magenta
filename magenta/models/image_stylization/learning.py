@@ -42,7 +42,7 @@ def precompute_gram_matrices(image, final_endpoint='fc8'):
     end_points = vgg.vgg_16(image, final_endpoint=final_endpoint)
     tf.train.Saver(slim.get_variables('vgg_16')).restore(
         session, vgg.checkpoint_file())
-    return dict([(key, _gram_matrix(value).eval())
+    return dict([(key, gram_matrix(value).eval())
                  for key, value in end_points.iteritems()])
 
 
@@ -149,7 +149,7 @@ def style_loss(style_gram_matrices, end_points, style_weights):
     # Reducing over all but the batch axis before multiplying with the style
     # weights allows to use multiple sets of style weights in a single batch.
     loss = tf.reduce_mean(
-        (_gram_matrix(end_points[name]) - style_gram_matrices[name]) ** 2,
+        (gram_matrix(end_points[name]) - style_gram_matrices[name]) ** 2,
         [1, 2])
     weighted_style_loss = tf.reduce_mean(weight * loss)
     loss = tf.reduce_mean(loss)
@@ -163,7 +163,35 @@ def style_loss(style_gram_matrices, end_points, style_weights):
   return total_style_loss, style_loss_dict
 
 
-def _gram_matrix(feature_maps):
+def total_variation_loss(stylized_inputs, total_variation_weight):
+  """Total variation regularization loss.
+
+  This loss improves the smoothness of the image by expressing high frequency
+  variations as a loss.
+  http://link.springer.com/article/10.1023/B:JMIV.0000011325.36760.1e
+
+  Args:
+    stylized_inputs: The batched set of images.
+    total_variation_weight: TODO(vdumoulin): WRITEME.
+
+  Returns:
+    A float32 scalar containing the total variational loss.
+  """
+  batch_size, height, width, channels = [x.value for x in
+                                         stylized_inputs.get_shape()]
+  y_size = np.float32((height - 1) * width * channels)
+  x_size = np.float32(height * (width - 1) * channels)
+  y_loss = tf.nn.l2_loss(stylized_inputs[:, 1:, :, :] -
+                         stylized_inputs[:, :height - 1, :, :]) / y_size
+  x_loss = tf.nn.l2_loss(stylized_inputs[:, :, 1:, :] -
+                         stylized_inputs[:, :, :width - 1, :]) / x_size
+  loss = (y_loss + x_loss) / batch_size
+  weighted_loss = loss * total_variation_weight
+  return weighted_loss, {'total_variation_loss': loss,
+                         'weighted_total_variation_loss': weighted_loss}
+
+
+def gram_matrix(feature_maps):
   """Computes the Gram matrix for a set of feature maps."""
   batch_size, height, width, channels = tf.unstack(tf.shape(feature_maps))
   denominator = tf.to_float(height * width)
@@ -171,3 +199,4 @@ def _gram_matrix(feature_maps):
       feature_maps, tf.stack([batch_size, height * width, channels]))
   matrix = tf.matmul(feature_maps, feature_maps, adjoint_a=True)
   return matrix / denominator
+
