@@ -18,7 +18,7 @@ import tensorflow as tf
 import numpy as np
 #from google3.pyglib import gfile
 
-from magenta.models.image_stylization import any_image_stylization_build_model as build_model
+from magenta.models.any_image_stylization import any_image_stylization_build_model as build_model
 from magenta.models.image_stylization import image_utils
 
 slim = tf.contrib.slim
@@ -49,8 +49,6 @@ FLAGS = flags.FLAGS
 
 
 def main(unused_argv=None):
-  print(FLAGS.checkpoint)
-  print('-----------------------------------------------------------------------------------')
   tf.logging.set_verbosity(tf.logging.INFO)
   if not tf.gfile.Exists(FLAGS.output_dir):
     tf.gfile.MkDir(FLAGS.output_dir)
@@ -88,8 +86,6 @@ def main(unused_argv=None):
     eval_dict = loss_dict
     eval_dict['stylized_images'] = stylized_images
 
-    print(FLAGS.checkpoint)
-    print('-----------------------------------------------------------------------------------')
     if tf.gfile.IsDirectory(FLAGS.checkpoint):
       checkpoint = tf.train.latest_checkpoint(FLAGS.checkpoint)
     else:

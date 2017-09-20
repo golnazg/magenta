@@ -12,10 +12,10 @@ set -x
 PATH_TO_DTD_DATASET=/usr/local/google/home/golnazg/Downloads/dtd/
 #STYLE_IMAGES_PATHS=$(awk -v prefix="${PATH_TO_DTD_DATASET}/images/" '{print prefix $0}' "${PATH_TO_DTD_DATASET}/labels/train1.txt")
 #STYLE_IMAGES_PATHS=$( echo $STYLE_IMAGES_PATHS | sed 'y/ /,/' )
-STYLE_IMAGES_PATHS="${PATH_TO_DTD_DATASET}/images/paisley/*.jpg"
+STYLE_IMAGES_PATHS="${PATH_TO_DTD_DATASET}/images/cobwebbed/*.jpg"
 
-OUTPUT_RECORDIO_PATH=/usr/local/google/home/golnazg/style_transfer/dtd/dtd/train_images/dtd_training_paisley_wg.tfrecord
-COMPUTE_GRAM_MATRICES=True
+OUTPUT_RECORDIO_PATH=/usr/local/google/home/golnazg/style_transfer/dtd/dtd/train_images/dtd_training_cobwebbed.tfrecord
+COMPUTE_GRAM_MATRICES=False
 
 #set vgg path
 bazel build  -c opt --copt=-mavx --config=cuda \

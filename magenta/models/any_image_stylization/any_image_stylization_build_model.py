@@ -7,9 +7,9 @@ from __future__ import print_function
 
 import tensorflow as tf
 
-from magenta.models.image_stylization import any_image_stylization_losses as losses
+from magenta.models.any_image_stylization import any_image_stylization_losses as losses
 from magenta.models.image_stylization import ops
-from magenta.models.image_stylization import nza_model as transformer_model
+from magenta.models.any_image_stylization import nza_model as transformer_model
 from tensorflow.contrib.slim.python.slim.nets import inception_v3
 
 slim = tf.contrib.slim

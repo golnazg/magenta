@@ -317,6 +317,7 @@ def any_style_image_inputs(style_dataset_file,
       label = features['label']
 
       if image_size is not None:
+        image_channels = image.shape[2].value
         if augment_style_images:
           image_orig = image
           #color_transformations.append(slim.preprocess.random_brightness_func(0.8))
@@ -339,8 +340,8 @@ def any_style_image_inputs(style_dataset_file,
               dtype=dtypes.int32)
           image = _aspect_preserving_resize(image,
                                                        random_larger_image_size)
-          image = tf.random_crop(image, size = [image_size, image_size, image.shape[2].value])
-          image.set_shape([image_size, image_size, image.shape[2].value])
+          image = tf.random_crop(image, size = [image_size, image_size, image_channels])
+          image.set_shape([image_size, image_size, image_channels])
 
           image_orig = _aspect_preserving_resize(
               image_orig, image_size + 2)
@@ -350,7 +351,7 @@ def any_style_image_inputs(style_dataset_file,
         elif center_crop:
           image = _aspect_preserving_resize(image, image_size + 2)
           image = _central_crop([image], image_size, image_size)[0]
-          image.set_shape([image_size, image_size, image.shape[2].value])
+          image.set_shape([image_size, image_size, image_channels])
           image_orig = image
         else:
           image = _aspect_preserving_resize(image, image_size)

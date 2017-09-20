@@ -6,8 +6,8 @@ bazel build  -c opt --copt=-mavx --config=cuda \
 
 # Run training:
 train_dir=<TRAIN_DIR>
-TRAIN_DIR=/tmp/train_dir_v
-RECORDIO_PATH=/usr/local/google/home/golnazg/style_transfer/dtd/dtd/train_images/dtd_training_paisley_wg.tfrecord
+TRAIN_DIR=/tmp/train_dir_v2
+RECORDIO_PATH=/usr/local/google/home/golnazg/style_transfer/dtd/dtd/train_images/dtd_training_cobwebbed.tfrecord # create with gm
 NUM_STYLES=120
 
 bazel-bin/magenta/models/image_stylization/image_stylization_train \

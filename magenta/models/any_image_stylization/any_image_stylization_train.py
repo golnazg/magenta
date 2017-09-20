@@ -11,7 +11,7 @@ import os
 
 import tensorflow as tf
 
-from magenta.models.image_stylization import any_image_stylization_build_model as build_model
+from magenta.models.any_image_stylization import any_image_stylization_build_model as build_model
 from magenta.models.image_stylization import image_utils
 from magenta.models.image_stylization import vgg
 
@@ -25,12 +25,12 @@ flags = tf.app.flags
 flags.DEFINE_boolean('check_numerics', True,
                      'Add a NaN/Inf check to gammas and betas')
 flags.DEFINE_float('clip_gradient_norm', 0, 'Clip gradients to this norm')
-flags.DEFINE_float('learning_rate', 1e-3, 'Learning rate')
-flags.DEFINE_float('total_variation_weight', 0.0, 'Total variation weight')
+flags.DEFINE_float('learning_rate', 1e-5, 'Learning rate')
+flags.DEFINE_float('total_variation_weight', 1e4, 'Total variation weight')
 flags.DEFINE_string('content_weights', DEFAULT_CONTENT_WEIGHTS,
                     'Content weights')
 flags.DEFINE_string('style_weights', DEFAULT_STYLE_WEIGHTS, 'Style weights')
-flags.DEFINE_integer('batch_size', 16, 'Batch size.')
+flags.DEFINE_integer('batch_size', 8, 'Batch size.')
 flags.DEFINE_integer('image_size', 256, 'Image size.')
 flags.DEFINE_boolean('random_style_image_size', True,
                      'Wheather to augment style images or not.')
@@ -48,7 +48,7 @@ flags.DEFINE_integer('save_interval_secs', 15,
                      'Frequency at which the model is saved, in seconds.')
 flags.DEFINE_integer('task', 0, 'Task ID. Used when training with multiple '
                      'workers to identify each worker.')
-flags.DEFINE_integer('train_steps', 40000, 'Number of training steps.')
+flags.DEFINE_integer('train_steps', 8000000, 'Number of training steps.')
 flags.DEFINE_string('master', '',
                     'BNS name of the TensorFlow master to use.')
 flags.DEFINE_string('transformer_model', 'nza_das', 'Transformer model to'
@@ -56,8 +56,6 @@ flags.DEFINE_string('transformer_model', 'nza_das', 'Transformer model to'
 flags.DEFINE_string('style_dataset_file', None, 'Style dataset file.')
 flags.DEFINE_string('train_dir', None,
                     'Directory for checkpoints and summaries.')
-flags.DEFINE_bool('luminance_only', False,
-                  'If true, only use the luminance channel of content image.')
 
 FLAGS = flags.FLAGS
 
