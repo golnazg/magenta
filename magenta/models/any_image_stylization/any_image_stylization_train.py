@@ -68,12 +68,9 @@ flags.DEFINE_string('style_dataset_file', None, 'Style dataset file.')
 flags.DEFINE_string('train_dir', None,
                     'Directory for checkpoints and summaries.')
 flags.DEFINE_string('inception_v3_checkpoint_path', None,
-                    'Path to inception_v3 checkpoint')
+                    'Path to the pre-trained inception_v3 checkpoint.')
 
 FLAGS = flags.FLAGS
-
-#INCEPTION_V3_CHECKPOINT_DIR_ = '/namespace/vale-project/models/classification/imagenet/inception_v3/'
-INCEPTION_V3_CHECKPOINT_DIR_ = '/tmp/inception.ckpt'
 
 
 def main(unused_argv=None):

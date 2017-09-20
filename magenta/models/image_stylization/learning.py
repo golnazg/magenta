@@ -172,7 +172,7 @@ def total_variation_loss(stylized_inputs, total_variation_weight):
 
   Args:
     stylized_inputs: The batched set of images.
-    total_variation_weight: TODO(vdumoulin): WRITEME.
+    total_variation_weight: Weight of total variation loss.
 
   Returns:
     A float32 scalar containing the total variational loss.
