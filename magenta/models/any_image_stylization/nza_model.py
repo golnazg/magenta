@@ -1,8 +1,22 @@
-"""NZA: No Zeros Allowed, Decoder Applies Style.
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Style transfer network code.
 
-Same as nza model, just this model does not apply styles in the encoding
+This model does not apply styles in the encoding
 layers. Encoding layers (contract) use batch norm as the normalization function.
 """
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -29,7 +43,6 @@ def transform(input_, normalizer_fn=None, normalizer_params=None,
   Returns:
     Tensor. The output of the transformer network.
   """
-  # TODO(golnazg) refactor the common code of this model and nza model.
   with tf.variable_scope('transformer', reuse=reuse):
     with slim.arg_scope(
         [slim.conv2d],

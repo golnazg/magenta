@@ -1,3 +1,16 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Generates stylized images with different strengths of a stylization.
 
 For each pair of the content and style images this script computes stylized
@@ -61,7 +74,6 @@ def main(unused_argv=None):
         style_img_croped_resized,
         trainable=False,
         is_training=False,
-        transformer_model_name=FLAGS.transformer_model,
         inception_end_point='Mixed_6e',
         style_prediction_bottleneck=100,
         adds_losses=False)
@@ -98,7 +110,7 @@ def main(unused_argv=None):
           feed_dict={content_img_ph: content_img_np})
       image_utils.save_np_image(inp_img_croped_resized_np,
                                 os.path.join(FLAGS.output_dir, '%s.jpg' %
-                                             (content_img_name)), 'jpg')
+                                             (content_img_name)))
 
       # Computes bottleneck features of the style prediction network for the
       # identity transform.
@@ -121,7 +133,7 @@ def main(unused_argv=None):
             style_img_croped_resized, feed_dict={style_img_ph: style_image_np})
         image_utils.save_np_image(style_img_croped_resized_np,
                                   os.path.join(FLAGS.output_dir, '%s.jpg' %
-                                               (style_img_name)), 'jpg')
+                                               (style_img_name)))
 
         # Computes bottleneck features of the style prediction network for the
         # given style image.
@@ -145,24 +157,7 @@ def main(unused_argv=None):
           image_utils.save_np_image(
               stylized_image_res,
               os.path.join(FLAGS.output_dir, '%s_stylized_%s_%d.jpg' %
-                           (content_img_name, style_img_name, interp_i)), 'jpg')
-
-    tf.logging.info('list of content image names:')
-    content_img_names = ''
-    for content_i, img_path in enumerate(content_img_list):
-      content_img_name = os.path.basename(img_path)[:-4]
-      content_img_names += ',' + content_img_name
-    tf.logging.info(content_img_names)
-
-    tf.logging.info('list of style image names:')
-    style_img_names = ''
-    for style_i, style_img_path in enumerate(style_img_list):
-      style_img_name = os.path.basename(style_img_path)[:-4]
-      style_img_names += ',' + style_img_name
-      if style_i > FLAGS.maximum_styles_to_evaluate:
-        break
-    tf.logging.info(style_img_names)
-
+                           (content_img_name, style_img_name, interp_i)))
 
 if __name__ == '__main__':
   tf.app.run(main)

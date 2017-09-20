@@ -1,3 +1,16 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Generates stylized images given an content and style images.
 
 Given paths to a set of content images and paths to a set of style images, this
@@ -16,7 +29,6 @@ import os
 
 import tensorflow as tf
 import numpy as np
-#from google3.pyglib import gfile
 
 from magenta.models.any_image_stylization import any_image_stylization_build_model as build_model
 from magenta.models.image_stylization import image_utils
@@ -40,7 +52,6 @@ flags.DEFINE_string('content_images_paths', None, 'Paths to the content images'
 flags.DEFINE_string('output_dir', None, 'Output directory.')
 flags.DEFINE_integer('image_size', 300, 'Image size.')
 flags.DEFINE_integer('style_image_size', 300, 'Style image size.')
-flags.DEFINE_string('transformer_model', 'nza_das', 'Type of ransformer model.')
 flags.DEFINE_integer('maximum_styles_to_evaluate', 1024, 'Maximum number of'
                      'styles to evaluate.')
 flags.DEFINE_integer('maximum_results_to_save', 1024, 'Maximum number of'
@@ -52,9 +63,6 @@ def main(unused_argv=None):
   tf.logging.set_verbosity(tf.logging.INFO)
   if not tf.gfile.Exists(FLAGS.output_dir):
     tf.gfile.MkDir(FLAGS.output_dir)
-
-  if not os.path.exists(FLAGS.output_dir):
-    os.makedirs(FLAGS.output_dir)
 
   with tf.Graph().as_default(), tf.Session() as sess:
     # Defines place holder for the style image.
@@ -75,7 +83,6 @@ def main(unused_argv=None):
         style_img_croped_resized,
         trainable=False,
         is_training=False,
-        transformer_model_name=FLAGS.transformer_model,
         inception_end_point='Mixed_6e',
         style_prediction_bottleneck=100,
         adds_losses=True,
@@ -151,7 +158,7 @@ def main(unused_argv=None):
               feed_dict={content_img_ph: content_img_np})
           image_utils.save_np_image(inp_img_croped_resized_np,
                                     os.path.join(FLAGS.output_dir, '%s.jpg' %
-                                                 (content_img_name)), 'jpg')
+                                                 (content_img_name)))
 
           # Saves cropped resized style image.
           style_img_croped_resized_np = sess.run(
@@ -159,13 +166,13 @@ def main(unused_argv=None):
               feed_dict={style_img_ph: style_image_np})
           image_utils.save_np_image(style_img_croped_resized_np,
                                     os.path.join(FLAGS.output_dir, '%s.jpg' %
-                                                 (style_img_name)), 'jpg')
+                                                 (style_img_name)))
 
           # Saves stylized image.
           image_utils.save_np_image(
               stylized_image_res,
               os.path.join(FLAGS.output_dir, '%s_stylized_%s.jpg' %
-                           (content_img_name, style_img_name)), 'jpg')
+                           (content_img_name, style_img_name)))
 
           # Saves content and style losses.
           scores_file = tf.gfile.Open(
@@ -196,21 +203,6 @@ def main(unused_argv=None):
                        total_style_loss / len(content_scores)))
     scores_file.close()
 
-    tf.logging.info('list of content image names:')
-    content_img_names = ''
-    for content_i, img_path in enumerate(content_img_list):
-      content_img_name = os.path.basename(img_path)[:-4]
-      content_img_names += ',' + content_img_name
-    tf.logging.info(content_img_names)
-
-    tf.logging.info('list of style image names:')
-    style_image_names = ''
-    for style_i, style_img_path in enumerate(style_img_list):
-      style_img_name = os.path.basename(style_img_path)[:-4]
-      style_image_names += ',' + style_img_name
-      if style_i > FLAGS.maximum_styles_to_evaluate:
-        break
-    tf.logging.info(style_image_names)
     tf.logging.info('total_content_loss:%.3f total_style_loss: %.3f' %
                     (total_content_loss / len(content_scores),
                      total_style_loss / len(content_scores)))

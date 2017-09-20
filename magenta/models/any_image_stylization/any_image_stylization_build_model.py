@@ -1,3 +1,16 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """methods for building real-time any style transfer model.
 
 """
@@ -20,7 +33,6 @@ def build_model(content_input_,
                 trainable,
                 is_training,
                 reuse=None,
-                transformer_model_name='nza_das',
                 inception_end_point='Mixed_6e',
                 style_prediction_bottleneck=100,
                 adds_losses=True,
@@ -35,8 +47,6 @@ def build_model(content_input_,
     trainable: bool. Should the parameters be marked as trainable?
     is_training: bool. Is it training phase or not?
     reuse: bool. Whether to reuse model parameters. Defaults to False.
-    transformer_model_name: string. Specifies the model to be used for the
-        transformer network.
     inception_end_point: string. Specifies the endpoint to construct the
         inception_v3 network up to. This network is used for style prediction.
     style_prediction_bottleneck: int. Specifies the bottleneck size in the
@@ -50,8 +60,6 @@ def build_model(content_input_,
         loss computed.
     total_variation_weight: float. Coefficient for the total variation part of
         the loss.
-  Raises:
-    ValueError: The transformer_model_name is invalid.
 
   Returns:
     Tensor for the output of the transformer network, Tensor for the total loss,

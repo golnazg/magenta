@@ -1,3 +1,16 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Trains a real-time any painting style transfer model.
 
 For example of usage see start_training_locally.sh and start_training_on_borg.sh
@@ -51,11 +64,11 @@ flags.DEFINE_integer('task', 0, 'Task ID. Used when training with multiple '
 flags.DEFINE_integer('train_steps', 8000000, 'Number of training steps.')
 flags.DEFINE_string('master', '',
                     'BNS name of the TensorFlow master to use.')
-flags.DEFINE_string('transformer_model', 'nza_das', 'Transformer model to'
-                    'train.')
 flags.DEFINE_string('style_dataset_file', None, 'Style dataset file.')
 flags.DEFINE_string('train_dir', None,
                     'Directory for checkpoints and summaries.')
+flags.DEFINE_string('inception_v3_checkpoint_path', None,
+                    'Path to inception_v3 checkpoint')
 
 FLAGS = flags.FLAGS
 
@@ -95,7 +108,6 @@ def main(unused_argv=None):
           style_inputs_,
           trainable=True,
           is_training=True,
-          transformer_model_name=FLAGS.transformer_model,
           inception_end_point='Mixed_6e',
           style_prediction_bottleneck=100,
           adds_losses=True,
@@ -121,12 +133,8 @@ def main(unused_argv=None):
           clip_gradient_norm=FLAGS.clip_gradient_norm,
           summarize_gradients=False)
 
-      print(vgg.checkpoint_file())
-      print('-------------------------------')
-
       # Function to restore VGG16 parameters.
       init_fn_vgg = slim.assign_from_checkpoint_fn(
-          #tf.train.latest_checkpoint(vgg.checkpoint_file()),
           vgg.checkpoint_file(),
           slim.get_variables('vgg_16'))
 
@@ -136,8 +144,7 @@ def main(unused_argv=None):
           for var in slim.get_model_variables('InceptionV3')
       }
       init_fn_inception = slim.assign_from_checkpoint_fn(
-          #tf.train.latest_checkpoint(INCEPTION_V3_CHECKPOINT_DIR_),
-          INCEPTION_V3_CHECKPOINT_DIR_,
+          FLAGS.inception_v3_checkpoint_path,
           inception_variables_dict)
 
       # Function to restore VGG16 and Inception_v3 parameters.

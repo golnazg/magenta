@@ -22,7 +22,6 @@ import os
 import tempfile
 
 
-from matplotlib import pyplot
 import numpy as np
 import scipy
 import scipy.misc
@@ -320,18 +319,10 @@ def any_style_image_inputs(style_dataset_file,
         image_channels = image.shape[2].value
         if augment_style_images:
           image_orig = image
-          #color_transformations.append(slim.preprocess.random_brightness_func(0.8))
           image = tf.image.random_brightness(image, max_delta=0.8)
-          #slim.preprocess.random_saturation_func(0.5, 1.5))
           image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
-          #color_transformations.append(slim.preprocess.random_hue_func(0.2))
           image = tf.image.random_hue(image, max_delta=0.2)
-          #color_transformations = []
-          #color_transformations.append(
-          #image = slim.preprocess.apply_transformations(image, color_transformations)
-          #image = slim.preprocess.flip_dim([image], prob=0.5, dim=1)[0]
           image = tf.image.random_flip_left_right(image)
-          #image = slim.preprocess.flip_dim([image], prob=0.5, dim=0)[0]
           image = tf.image.random_flip_up_down(image)
           random_larger_image_size = random_ops.random_uniform(
               [],
@@ -412,7 +403,7 @@ def load_np_image_uint8(image_file):
     return image
 
 
-def save_np_image_(image, output_file):
+def save_np_image(image, output_file, save_format='jpeg'):
   """Saves an image to disk.
 
   Args:
@@ -423,31 +414,11 @@ def save_np_image_(image, output_file):
   _, ext = os.path.splitext(output_file)
   image = np.uint8(image * 255.0)
   buf = io.BytesIO()
-  scipy.misc.imsave(buf, np.squeeze(image, 0), format='jpeg')
+  scipy.misc.imsave(buf, np.squeeze(image, 0), format=save_format)
   buf.seek(0)
   f = tf.gfile.GFile(output_file, 'w')
   f.write(buf.getvalue())
   f.close()
-
-
-def save_np_image(image, output_file, save_format=None):
-  """Saves an image to disk.
-
-  Args:
-    image: 3-D numpy array of shape [image_size, image_size, 3] and dtype
-        uint8, with values in [0, 255].
-    output_file: str, output file.
-    save_format: format for saving, use None to deduce it from the extension
-        of the filename.
-  """
-  pyplot.gcf().clear()
-  buf = io.BytesIO()
-  pyplot.imsave(buf, np.squeeze(image, 0), format=save_format)
-  buf.seek(0)
-  f = tf.gfile.GFile(output_file, 'w')
-  f.write(buf.getvalue())
-  f.close()
-  pyplot.gcf().clear()
 
 
 def load_image(image_file, image_size=None):
@@ -645,6 +616,37 @@ def _smallest_size_at_least(height, width, smallest_side):
   return new_height, new_width
 
 
+def _aspect_preserving_resize(image, smallest_side):
+  """Resize images preserving the original aspect ratio.
+
+  Args:
+    image: A 3-D image or a 4-D batch of images `Tensor`.
+    smallest_side: A python integer or scalar `Tensor` indicating the size of
+      the smallest side after resize.
+
+  Returns:
+    resized_image: A 3-D or 4-D tensor containing the resized image(s).
+  """
+  smallest_side = tf.convert_to_tensor(smallest_side, dtype=tf.int32)
+
+  input_rank = len(image.get_shape())
+  if input_rank == 3:
+    image = tf.expand_dims(image, 0)
+
+  shape = tf.shape(image)
+  height = shape[1]
+  width = shape[2]
+  new_height, new_width = _smallest_size_at_least(height, width, smallest_side)
+  resized_image = tf.image.resize_bilinear(image, [new_height, new_width],
+                                           align_corners=False)
+  if input_rank == 3:
+    resized_image = tf.squeeze(resized_image)
+    resized_image.set_shape([None, None, 3])
+  else:
+    resized_image.set_shape([None, None, None, 3])
+  return resized_image
+
+
 def _decode_jpeg(image_buffer, scope=None):
   """Decode a JPEG string into one 3-D float image Tensor.
 
@@ -763,33 +765,4 @@ def center_crop_resize_image(image, image_size):
   return tf.expand_dims(image, 0)
 
 
-def _aspect_preserving_resize(image, smallest_side):
-  """Resize images preserving the original aspect ratio.
-
-  Args:
-    image: A 3-D image or a 4-D batch of images `Tensor`.
-    smallest_side: A python integer or scalar `Tensor` indicating the size of
-      the smallest side after resize.
-
-  Returns:
-    resized_image: A 3-D or 4-D tensor containing the resized image(s).
-  """
-  smallest_side = tf.convert_to_tensor(smallest_side, dtype=tf.int32)
-
-  input_rank = len(image.get_shape())
-  if input_rank == 3:
-    image = tf.expand_dims(image, 0)
-
-  shape = tf.shape(image)
-  height = shape[1]
-  width = shape[2]
-  new_height, new_width = _smallest_size_at_least(height, width, smallest_side)
-  resized_image = tf.image.resize_bilinear(image, [new_height, new_width],
-                                           align_corners=False)
-  if input_rank == 3:
-    resized_image = tf.squeeze(resized_image)
-    resized_image.set_shape([None, None, 3])
-  else:
-    resized_image.set_shape([None, None, None, 3])
-  return resized_image
 

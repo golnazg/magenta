@@ -1,3 +1,16 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Evaluates a real-time any painting style transfer model.
 
 For example of usage see evaluate_locally.sh and start_training_on_borg.sh
@@ -36,8 +49,6 @@ flags.DEFINE_string('checkpoint_dir', None,
                     'Directory for checkpoints and summaries')
 flags.DEFINE_string('master', '',
                     'BNS name of the TensorFlow master to use.')
-flags.DEFINE_string('transformer_model', 'nza_das', 'Type of the transformer'
-                    'model.')
 flags.DEFINE_string('eval_name', 'eval', 'Name of evaluation.')
 flags.DEFINE_string('eval_style_dataset_file', None, 'path to the evaluation'
                     'style dataset file.')
@@ -73,7 +84,6 @@ def main(_):
         trainable=False,
         is_training=False,
         reuse=None,
-        transformer_model_name=FLAGS.transformer_model,
         inception_end_point='Mixed_6e',
         style_prediction_bottleneck=100,
         adds_losses=False)
@@ -85,7 +95,6 @@ def main(_):
         trainable=False,
         is_training=False,
         reuse=True,
-        transformer_model_name=FLAGS.transformer_model,
         inception_end_point='Mixed_6e',
         style_prediction_bottleneck=100,
         adds_losses=True,

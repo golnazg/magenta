@@ -94,7 +94,7 @@ py_binary(
     ],
     deps = [
         ":image_utils",
-        ":learning",
+        ":model",
     ],
 )
 
@@ -138,18 +138,6 @@ py_library(
     name = "model",
     srcs = [
         "model.py",
-    ],
-    srcs_version = "PY2AND3",
-    deps = [
-        ":ops",
-        # tensorflow dep
-    ],
-)
-
-py_library(
-    name = "nza_model",
-    srcs = [
-        "nza_model.py",
     ],
     srcs_version = "PY2AND3",
     deps = [
