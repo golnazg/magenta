@@ -29,14 +29,21 @@ import tensorflow as tf
 slim = tf.contrib.slim
 
 flags = tf.app.flags
-flags.DEFINE_string('vgg_checkpoint', 'None', 'Path to VGG16 checkpoint file.')
+flags.DEFINE_string('vgg_checkpoint', None, 'Path to VGG16 checkpoint file.')
 FLAGS = flags.FLAGS
 
 
 def checkpoint_file():
-  """Get the path to the VGG16 checkpoint file from flags."""
+  """Get the path to the VGG16 checkpoint file from flags.
+
+  Returns:
+    Path to the VGG checkpoint.
+  Raises:
+    ValueError: checkpoint is null.
+  """
   if FLAGS.vgg_checkpoint is None:
-    raise('VGG checkpoint is None.')
+    raise ValueError('VGG checkpoint is None.')
+
   return os.path.expanduser(FLAGS.vgg_checkpoint)
 
 

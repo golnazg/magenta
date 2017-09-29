@@ -17,28 +17,28 @@
 licenses(["notice"])  # Apache 2.0
 
 py_binary(
-    name = "any_image_stylization_evaluate",
-    srcs = ["any_image_stylization_evaluate.py"],
+    name = "arbitrary_image_stylization_evaluate",
+    srcs = ["arbitrary_image_stylization_evaluate.py"],
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/tools/pip:__subpackages__",
     ],
     deps = [
-        ":any_image_stylization_build_model",
+        ":arbitrary_image_stylization_build_model",
         "//magenta/models/image_stylization:image_utils",
         "//magenta/models/image_stylization:learning",
     ],
 )
 
 py_binary(
-    name = "any_image_stylization_train",
-    srcs = ["any_image_stylization_train.py"],
+    name = "arbitrary_image_stylization_train",
+    srcs = ["arbitrary_image_stylization_train.py"],
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/tools/pip:__subpackages__",
     ],
     deps = [
-        ":any_image_stylization_build_model",
+        ":arbitrary_image_stylization_build_model",
         "//magenta/models/image_stylization:image_utils",
         "//magenta/models/image_stylization:learning",
         "//magenta/models/image_stylization:vgg",
@@ -46,34 +46,21 @@ py_binary(
 )
 
 py_binary(
-    name = "any_image_stylization_transform",
-    srcs = ["any_image_stylization_transform.py"],
+    name = "any_image_stylization_transform_with_weight",
+    srcs = ["any_image_stylization_transform_with_weight.py"],
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/tools/pip:__subpackages__",
     ],
     deps = [
-        ":any_image_stylization_build_model",
-        "//magenta/models/image_stylization:image_utils",
-    ],
-)
-
-py_binary(
-    name = "interpolation_with_identity",
-    srcs = ["interpolation_with_identity.py"],
-    srcs_version = "PY2AND3",
-    visibility = [
-        "//magenta/tools/pip:__subpackages__",
-    ],
-    deps = [
-        ":any_image_stylization_build_model",
+        ":arbitrary_image_stylization_build_model",
         "//magenta/models/image_stylization:image_utils",
     ],
 )
 
 py_library(
-    name = "any_image_stylization_losses",
-    srcs = ["any_image_stylization_losses.py"],
+    name = "arbitrary_image_stylization_losses",
+    srcs = ["arbitrary_image_stylization_losses.py"],
     srcs_version = "PY2AND3",
     deps = [
         "//magenta/models/image_stylization:learning",
@@ -96,15 +83,15 @@ py_library(
 )
 
 py_library(
-    name = "any_image_stylization_build_model",
+    name = "arbitrary_image_stylization_build_model",
     srcs = [
-        "any_image_stylization_build_model.py",
+        "arbitrary_image_stylization_build_model.py",
     ],
     srcs_version = "PY2AND3",
     deps = [
         "//magenta/models/image_stylization:ops",
         ":nza_model",
-        ":any_image_stylization_losses",
+        ":arbitrary_image_stylization_losses",
         # tensorflow dep
     ],
 )

@@ -138,7 +138,7 @@ def imagenet_inputs(batch_size, image_size, num_readers=1,
 
 def style_image_inputs(style_dataset_file, batch_size=None, image_size=None,
                        square_crop=False, shuffle=True):
-  """Loads a style image at random.
+  """Loads a batch of random style image given the address of a tfrecord dataset.
 
   Args:
     style_dataset_file: str, path to the tfrecord dataset of style files.
@@ -236,15 +236,23 @@ def style_image_inputs(style_dataset_file, batch_size=None, image_size=None,
     return image, label, gram_matrices
 
 
-def any_style_image_inputs(style_dataset_file,
+def arbitrary_style_image_inputs(style_dataset_file,
                        batch_size=None,
                        image_size=None,
                        center_crop=True,
                        shuffle=True,
                        augment_style_images=False,
-                       random_style_image_size=False):
-  """Loads a style image at random.
+                       random_style_image_size=False,
+                       min_rand_image_size=128,
+                       max_rand_image_size=300):
+  """Loads a batch of random style image given the address of a tfrecord dataset.
 
+  This method does not return pre-compute Gram matrices for the images like
+  style_image_inputs. But it can provides data augmentation. If
+  augment_style_images is equal to True, then style images will randomly
+  modified (eg. their brightness, hue or saturation may change) for data
+  augmentation. If random_style_image_size is set to True then all images
+  in one batch will be resized to a random size.
   Args:
     style_dataset_file: str, path to the tfrecord dataset of style files.
     batch_size: int. If provided, batches style images. Defaults to None.
@@ -254,8 +262,13 @@ def any_style_image_inputs(style_dataset_file,
         Defaults to False.
     shuffle: bool, whether to shuffle style files at random. Defaults to False.
     augment_style_images: bool. Wheather to augment style images or not.
-    random_style_image_size: bool. Wheather to resize the style images to a
-        random size or not.
+    random_style_image_size: bool. If this value is True, then all the style
+        images in one batch will be resized to a random size between
+        min_rand_image_size and max_rand_image_size.
+    min_rand_image_size: int. If random_style_image_size is True, this value
+        specifies the minimum image size.
+    max_rand_image_size: int. If random_style_image_size is True, this value
+        specifies the maximum image size.
 
   Returns:
     4-D tensor of shape [1, ?, ?, 3] with values in [0, 1] for the style
@@ -363,8 +376,8 @@ def any_style_image_inputs(style_dataset_file,
         image = _aspect_preserving_resize(image,
                                                      random_ops.random_uniform(
                                                          [],
-                                                         minval=128,
-                                                         maxval=300,
+                                                         minval=min_rand_image_size,
+                                                         maxval=max_rand_image_size,
                                                          dtype=dtypes.int32))
 
       return image, label, image_orig
@@ -410,8 +423,8 @@ def save_np_image(image, output_file, save_format='jpeg'):
     image: 3-D numpy array of shape [image_size, image_size, 3] and dtype
         float32, with values in [0, 1].
     output_file: str, output file.
+    save_format: format for saving image (eg. jpeg).
   """
-  _, ext = os.path.splitext(output_file)
   image = np.uint8(image * 255.0)
   buf = io.BytesIO()
   scipy.misc.imsave(buf, np.squeeze(image, 0), format=save_format)
@@ -763,6 +776,4 @@ def center_crop_resize_image(image, image_size):
   image = tf.image.resize_images(image, tf.constant([image_size, image_size]))
 
   return tf.expand_dims(image, 0)
-
-
 

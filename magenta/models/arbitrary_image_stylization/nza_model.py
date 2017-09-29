@@ -22,7 +22,6 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from tensorflow.contrib.slim.python.slim.nets import inception_v3
 
 slim = tf.contrib.slim
 

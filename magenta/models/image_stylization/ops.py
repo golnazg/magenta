@@ -17,10 +17,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# internal imports
 import tensorflow as tf
-from tensorflow.python.ops import variable_scope
 from tensorflow.python.framework import ops as framework_ops
+from tensorflow.python.ops import variable_scope
 
 slim = tf.contrib.slim
 
@@ -227,7 +226,10 @@ def conditional_style_norm(inputs, style_params=None, activation_fn=None,
                            check_numerics=True, scope=None):
   """Conditional style normalization.
 
-  Can be used as a normalizer function for conv2d.
+  Can be used as a normalizer function for conv2d. This method is similar
+  to conditional_instance_norm. But instead of creating the normalization
+  variables (beta and gamma), it gets these values as inputs in
+  style_params dictionary.
 
   Args:
     inputs: a tensor with 4 dimensions. The normalization occurs over height

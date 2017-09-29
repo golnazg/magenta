@@ -26,10 +26,11 @@ from __future__ import print_function
 
 import os
 
+import ast
 import numpy as np
 import tensorflow as tf
 
-from magenta.models.any_image_stylization import any_image_stylization_build_model as build_model
+from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_build_model as build_model
 from magenta.models.image_stylization import image_utils
 
 slim = tf.contrib.slim
@@ -43,12 +44,14 @@ flags.DEFINE_string('content_images_paths', None, 'Paths to the content images'
 flags.DEFINE_string('output_dir', None, 'Output directory.')
 flags.DEFINE_integer('image_size', 300, 'Image size.')
 flags.DEFINE_integer('style_image_size', 300, 'Style image size.')
-flags.DEFINE_string('transformer_model', 'nza_das', 'Type of ransformer model.')
 flags.DEFINE_integer('maximum_styles_to_evaluate', 1024, 'Maximum number of'
                      'styles to evaluate.')
-flags.DEFINE_integer('num_interpolations', 11, 'Number of the interpolations'
-                     'between the parameters of the identity transform and the'
-                     'style parameters of the style image.')
+flags.DEFINE_string('interpolation_weights', '[1.0]' , 'List of weights'
+                    'for interpolation between the parameters of the identity'
+                    'transform and the style parameters of the style image. The'
+                    'larger the weight is the strength of stylization is more.'
+                    'Weight of 1.0 means the normal style transfer and weight of'
+                    '0.0 means identity transform.')
 FLAGS = flags.FLAGS
 
 
@@ -140,10 +143,10 @@ def main(unused_argv=None):
         style_params = sess.run(
             bottleneck_feat, feed_dict={style_img_ph: style_image_np})
 
+        interpolation_weights = ast.literal_eval(FLAGS.interpolation_weights)
         # Interpolates between the parameters of the identity transform and
         # style parameters of the given style image.
-        for interp_i in range(0, FLAGS.num_interpolations):
-          wi = interp_i / (FLAGS.num_interpolations - 1)
+        for interp_i, wi in enumerate(interpolation_weights):
           stylized_image_res = sess.run(
               stylized_images,
               feed_dict={

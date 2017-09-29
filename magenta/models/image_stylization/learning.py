@@ -69,7 +69,7 @@ def total_loss(inputs, stylized_inputs, style_gram_matrices, content_weights,
   Returns:
     Tensor for the total loss, dict mapping loss names to losses.
   """
-  # Propagate the the input and its stylized version through VGG16
+  # Propagate the input and its stylized version through VGG16.
   end_points = vgg.vgg_16(inputs, reuse=reuse)
   stylized_end_points = vgg.vgg_16(stylized_inputs, reuse=True)
 

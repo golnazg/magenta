@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Loss methods for real-time any style image transfer model."""
+"""Loss methods for real-time arbitrary image stylization model."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -20,8 +20,8 @@ from __future__ import print_function
 import numpy as np
 import tensorflow as tf
 
-from magenta.models.image_stylization import vgg
 from magenta.models.image_stylization import learning as learning_utils
+from magenta.models.image_stylization import vgg
 
 
 def total_loss(content_inputs, style_inputs, stylized_inputs, content_weights,
@@ -48,7 +48,7 @@ def total_loss(content_inputs, style_inputs, stylized_inputs, content_weights,
   Returns:
     Tensor for the total loss, dict mapping loss names to losses.
   """
-  # Propagate the the input and its stylized version through VGG16
+  # Propagate the input and its stylized version through VGG16.
   with tf.name_scope('content_endpoints'):
     content_end_points = vgg.vgg_16(content_inputs, reuse=reuse)
   with tf.name_scope('style_endpoints'):

@@ -107,7 +107,7 @@ py_library(
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/models/image_stylization:__subpackages__",
-        "//magenta/models/any_image_stylization:__subpackages__",
+        "//magenta/models/arbitrary_image_stylization:__subpackages__",
     ],
     deps = [
         ":imagenet_data",
@@ -125,7 +125,7 @@ py_library(
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/models/image_stylization:__subpackages__",
-        "//magenta/models/any_image_stylization:__subpackages__",
+        "//magenta/models/arbitrary_image_stylization:__subpackages__",
     ],
     deps = [
         ":vgg",
@@ -154,7 +154,7 @@ py_library(
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/models/image_stylization:__subpackages__",
-        "//magenta/models/any_image_stylization:__subpackages__",
+        "//magenta/models/arbitrary_image_stylization:__subpackages__",
     ],
     deps = [
         # tensorflow dep
@@ -169,7 +169,7 @@ py_library(
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/models/image_stylization:__subpackages__",
-        "//magenta/models/any_image_stylization:__subpackages__",
+        "//magenta/models/arbitrary_image_stylization:__subpackages__",
     ],
     deps = [
         # tensorflow dep

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Trains a real-time any painting style transfer model.
+"""Trains a real-time arbitrary image stylization model.
 
 For example of usage see start_training_locally.sh and start_training_on_borg.sh
 """
@@ -24,7 +24,7 @@ import os
 
 import tensorflow as tf
 
-from magenta.models.any_image_stylization import any_image_stylization_build_model as build_model
+from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_build_model as build_model
 from magenta.models.image_stylization import image_utils
 from magenta.models.image_stylization import vgg
 
@@ -67,7 +67,7 @@ flags.DEFINE_string('master', '',
 flags.DEFINE_string('style_dataset_file', None, 'Style dataset file.')
 flags.DEFINE_string('train_dir', None,
                     'Directory for checkpoints and summaries.')
-flags.DEFINE_string('inception_v3_checkpoint_path', None,
+flags.DEFINE_string('inception_v3_checkpoint', None,
                     'Path to the pre-trained inception_v3 checkpoint.')
 
 FLAGS = flags.FLAGS
@@ -85,7 +85,7 @@ def main(unused_argv=None):
       content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
 
       # Loads style images.
-      style_inputs_, _, style_inputs_orig_ = image_utils.any_style_image_inputs(
+      style_inputs_, _, style_inputs_orig_ = image_utils.arbitrary_style_image_inputs(
           FLAGS.style_dataset_file,
           batch_size=FLAGS.batch_size,
           image_size=FLAGS.image_size,
@@ -141,7 +141,7 @@ def main(unused_argv=None):
           for var in slim.get_model_variables('InceptionV3')
       }
       init_fn_inception = slim.assign_from_checkpoint_fn(
-          FLAGS.inception_v3_checkpoint_path,
+          FLAGS.inception_v3_checkpoint,
           inception_variables_dict)
 
       # Function to restore VGG16 and Inception_v3 parameters.

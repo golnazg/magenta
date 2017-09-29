@@ -38,7 +38,7 @@ from magenta.models.image_stylization import learning
 flags = tf.app.flags
 flags.DEFINE_string('style_files', None, 'Style image files.')
 flags.DEFINE_string('output_file', None, 'Where to save the dataset.')
-flags.DEFINE_bool('compute_gram_matrices', True, 'Whether to compute gram'
+flags.DEFINE_bool('compute_gram_matrices', True, 'Whether to compute Gram'
                   'matrices or not.')
 FLAGS = flags.FLAGS
 
@@ -86,21 +86,17 @@ def main(unused_argv):
         with tf.Graph().as_default():
           style_end_points = learning.precompute_gram_matrices(
               tf.expand_dims(tf.to_float(style_image), 0),
-              # We use 'pool5' instead of 'fc8' because a) fully-connected layers
-              # are already too deep in the network to be useful for style and b)
-              # they're quite expensive to store.
+              # We use 'pool5' instead of 'fc8' because a) fully-connected
+              # layers are already too deep in the network to be useful for
+              # style and b) they're quite expensive to store.
               final_endpoint='pool5')
           for name, matrix in style_end_points.iteritems():
             feature[name] = _float_feature(matrix.flatten().tolist())
 
       example = tf.train.Example(features=tf.train.Features(feature=feature))
       writer.write(example.SerializeToString())
-  tf.logging.info('Output recordio file is saved at %s' % os.path.expanduser(FLAGS.output_file))
-
-
-def console_entry_point():
-  tf.app.run(main)
+  tf.logging.info('Output TFRecord file is saved at %s' % os.path.expanduser(FLAGS.output_file))
 
 
 if __name__ == '__main__':
-  console_entry_point()
+  tf.app.run(main)

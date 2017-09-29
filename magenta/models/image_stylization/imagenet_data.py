@@ -92,15 +92,19 @@ class ImagenetData(object):
       ValueError: if there are not data_files matching the subset.
     """
     imagenet_data_dir = os.path.expanduser(FLAGS.imagenet_data_dir)
-    if not tf.gfile.Exists(imagenet_data_dir) or not data_files:
+    if not tf.gfile.Exists(imagenet_data_dir):
+      print('%s does not exist!' % (imagenet_data_dir))
+      exit(-1)
+
+    tf_record_pattern = os.path.join(imagenet_data_dir, '%s-*' % self.subset)
+    data_files = tf.gfile.Glob(tf_record_pattern)
+    if not data_files:
       print('No files found for dataset ImageNet/%s at %s' %
             (self.subset, imagenet_data_dir))
 
       self.download_message()
       exit(-1)
 
-    tf_record_pattern = os.path.join(imagenet_data_dir, '%s-*' % self.subset)
-    data_files = tf.gfile.Glob(tf_record_pattern)
     return data_files
 
   def reader(self):
