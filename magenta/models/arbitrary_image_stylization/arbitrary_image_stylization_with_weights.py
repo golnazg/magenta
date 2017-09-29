@@ -24,9 +24,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import ast
 import os
 
-import ast
 import numpy as np
 import tensorflow as tf
 
@@ -46,12 +46,12 @@ flags.DEFINE_integer('image_size', 300, 'Image size.')
 flags.DEFINE_integer('style_image_size', 300, 'Style image size.')
 flags.DEFINE_integer('maximum_styles_to_evaluate', 1024, 'Maximum number of'
                      'styles to evaluate.')
-flags.DEFINE_string('interpolation_weights', '[1.0]' , 'List of weights'
+flags.DEFINE_string('interpolation_weights', '[1.0]', 'List of weights'
                     'for interpolation between the parameters of the identity'
                     'transform and the style parameters of the style image. The'
                     'larger the weight is the strength of stylization is more.'
-                    'Weight of 1.0 means the normal style transfer and weight of'
-                    '0.0 means identity transform.')
+                    'Weight of 1.0 means the normal style transfer and weight'
+                    'of 0.0 means identity transform.')
 FLAGS = flags.FLAGS
 
 
@@ -87,9 +87,8 @@ def main(unused_argv=None):
       checkpoint = FLAGS.checkpoint
       tf.logging.info('loading latest checkpoint file: {}'.format(checkpoint))
 
-    init_fn = slim.assign_from_checkpoint_fn(
-        checkpoint,
-        slim.get_variables_to_restore())
+    init_fn = slim.assign_from_checkpoint_fn(checkpoint,
+                                             slim.get_variables_to_restore())
     sess.run([tf.local_variables_initializer()])
     init_fn(sess)
 
@@ -104,7 +103,8 @@ def main(unused_argv=None):
     content_img_list = tf.gfile.Glob(FLAGS.content_images_paths)
 
     for content_i, content_img_path in enumerate(content_img_list):
-      content_img_np = image_utils.load_np_image_uint8(content_img_path)[:, :, :3]
+      content_img_np = image_utils.load_np_image_uint8(content_img_path)[:, :, :
+                                                                         3]
       content_img_name = os.path.basename(content_img_path)[:-4]
 
       # Saves cropped resized content image.
@@ -112,8 +112,8 @@ def main(unused_argv=None):
           content_img_cropped_resized,
           feed_dict={content_img_ph: content_img_np})
       image_utils.save_np_image(inp_img_croped_resized_np,
-                                os.path.join(FLAGS.output_dir, '%s.jpg' %
-                                             (content_img_name)))
+                                os.path.join(FLAGS.output_dir,
+                                             '%s.jpg' % (content_img_name)))
 
       # Computes bottleneck features of the style prediction network for the
       # identity transform.
@@ -124,7 +124,8 @@ def main(unused_argv=None):
         if style_i > FLAGS.maximum_styles_to_evaluate:
           break
         style_img_name = os.path.basename(style_img_path)[:-4]
-        style_image_np = image_utils.load_np_image_uint8(style_img_path)[:, :, :3]
+        style_image_np = image_utils.load_np_image_uint8(style_img_path)[:, :, :
+                                                                         3]
 
         if style_i % 10 == 0:
           tf.logging.info('Stylizing (%d) %s with (%d) %s' %
@@ -135,8 +136,8 @@ def main(unused_argv=None):
         style_img_croped_resized_np = sess.run(
             style_img_croped_resized, feed_dict={style_img_ph: style_image_np})
         image_utils.save_np_image(style_img_croped_resized_np,
-                                  os.path.join(FLAGS.output_dir, '%s.jpg' %
-                                               (style_img_name)))
+                                  os.path.join(FLAGS.output_dir,
+                                               '%s.jpg' % (style_img_name)))
 
         # Computes bottleneck features of the style prediction network for the
         # given style image.
@@ -162,5 +163,7 @@ def main(unused_argv=None):
               os.path.join(FLAGS.output_dir, '%s_stylized_%s_%d.jpg' %
                            (content_img_name, style_img_name, interp_i)))
 
+
 if __name__ == '__main__':
   tf.app.run(main)
+

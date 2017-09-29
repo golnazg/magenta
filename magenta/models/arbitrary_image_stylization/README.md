@@ -1,15 +1,15 @@
 # Style Transfer
 
-This directory contains code for implements "Exploring the structure of
-a real-time, arbitrary neural artistic stylization network" which can
-transfer style of *arbitrary* style image to arbitrary content image in
-real-time, in contrast to [limited styles](https://arxiv.org/abs/1610.07629).
+This directory contains the code for "Exploring the structure of a
+real-time, arbitrary neural artistic stylization network" paper which
+can transfer style of *arbitrary* style image to arbitrary content image in
+*real-time*, in contrast to [limited styles](https://arxiv.org/abs/1610.07629).
 
 [Exploring the structure of a real-time, arbitrary neural artistic stylization network](https://arxiv.org/abs/1705.06830). *Golnaz Ghiasi, Honglak Lee, Manjunath Kudlur, Vincent Dumoulin, Jonathon Shlens*.
 
 
 # Setup
-First you need to set up your [Magenta environment](/README.md).
+Set up your [Magenta environment](/README.md).
 
 # Stylizing an Image using a pre-trained model
 Download our pre-trained model:
@@ -21,7 +21,7 @@ In order to stylize an image according to an arbitrary painting, run the
 following command.
 
 ```bash
-$ any_image_stylization_transform_with_weight \
+$ arbitrary_image_stylization_with_weights \
   --checkpoint=/path/to/model.ckpt \
   --output_dir=/tmp/arbitrary_image_stylization/output \
   --style_images_paths=/path/to/style_images \
@@ -36,7 +36,7 @@ represents the desired weights for interpolation.
 
 ```bash
 $ INTERPOLATION_WEIGHTS='[0.0 0.2 0.4 0.6 0.8 1.0 1.5]'
-$ any_image_stylization_transform_with_weight \
+$ arbitrary_image_stylization_with_weights \
   --checkpoint=/path/to/model.ckpt \
   --output_dir=/tmp/arbitrary_image_stylization/interpolation_output \
   --style_images_paths=/path/to/style_images \
@@ -88,7 +88,7 @@ $ arbitrary_image_stylization_train \
       --train_dir="$logdir"/train_dir \
 ```
 
-To run an evalution job while training model on cpu or another gpu:
+To run an evalution job while training model on the CPU or another GPU:
 
 ```bash
 $ arbitrary_image_stylization_evaluate \

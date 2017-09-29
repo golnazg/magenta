@@ -85,7 +85,7 @@ def main(unused_argv=None):
       content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
 
       # Loads style images.
-      style_inputs_, _, style_inputs_orig_ = image_utils.arbitrary_style_image_inputs(
+      [style_inputs_, _, style_inputs_orig_] = image_utils.arbitrary_style_image_inputs(
           FLAGS.style_dataset_file,
           batch_size=FLAGS.batch_size,
           image_size=FLAGS.image_size,

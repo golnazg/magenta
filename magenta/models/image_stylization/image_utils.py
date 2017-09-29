@@ -138,7 +138,7 @@ def imagenet_inputs(batch_size, image_size, num_readers=1,
 
 def style_image_inputs(style_dataset_file, batch_size=None, image_size=None,
                        square_crop=False, shuffle=True):
-  """Loads a batch of random style image given the address of a tfrecord dataset.
+  """Loads a batch of random style image given the path of tfrecord dataset.
 
   Args:
     style_dataset_file: str, path to the tfrecord dataset of style files.
@@ -245,12 +245,12 @@ def arbitrary_style_image_inputs(style_dataset_file,
                        random_style_image_size=False,
                        min_rand_image_size=128,
                        max_rand_image_size=300):
-  """Loads a batch of random style image given the address of a tfrecord dataset.
+  """Loads a batch of random style image given the path of tfrecord dataset.
 
   This method does not return pre-compute Gram matrices for the images like
-  style_image_inputs. But it can provides data augmentation. If
+  style_image_inputs. But it can provide data augmentation. If
   augment_style_images is equal to True, then style images will randomly
-  modified (eg. their brightness, hue or saturation may change) for data
+  modified (eg. changes in brightness, hue or saturation) for data
   augmentation. If random_style_image_size is set to True then all images
   in one batch will be resized to a random size.
   Args:

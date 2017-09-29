@@ -46,8 +46,8 @@ py_binary(
 )
 
 py_binary(
-    name = "any_image_stylization_transform_with_weight",
-    srcs = ["any_image_stylization_transform_with_weight.py"],
+    name = "arbitrary_image_stylization_with_weights",
+    srcs = ["arbitrary_image_stylization_with_weights.py"],
     srcs_version = "PY2AND3",
     visibility = [
         "//magenta/tools/pip:__subpackages__",
