@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import ast
+import os
 
 import tensorflow as tf
 
@@ -52,86 +53,87 @@ flags.DEFINE_string('master', '',
 flags.DEFINE_string('eval_name', 'eval', 'Name of evaluation.')
 flags.DEFINE_string('eval_style_dataset_file', None, 'path to the evaluation'
                     'style dataset file.')
-flags.DEFINE_string('evaluation_device', "/device:CPU:0", 'Device to be used'
-                    'for running evaluation task.')
+flags.DEFINE_string('cuda_visible_devices', '', 'Use empty string to run'
+                     'evaluation task on the CPU or specify a GPU number eg. 0.')
 FLAGS = flags.FLAGS
 
 
 def main(_):
   tf.logging.set_verbosity(tf.logging.INFO)
-  with tf.device(FLAGS.evaluation_device):
-    with tf.Graph().as_default():
-      # Loads content images.
-      eval_content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
+  os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.cuda_visible_devices
 
-      # Process style and content weight flags.
-      content_weights = ast.literal_eval(FLAGS.content_weights)
-      style_weights = ast.literal_eval(FLAGS.style_weights)
+  with tf.Graph().as_default():# and tf.Session(config=session_conf).as_default():
+    # Loads content images.
+    eval_content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
 
-      # Loads evaluation style images.
-      eval_style_inputs_, _, _ = image_utils.arbitrary_style_image_inputs(
-          FLAGS.eval_style_dataset_file,
-          batch_size=FLAGS.batch_size,
-          image_size=FLAGS.image_size,
-          center_crop=True,
-          shuffle=True,
-          augment_style_images=False,
-          random_style_image_size=False)
+    # Process style and content weight flags.
+    content_weights = ast.literal_eval(FLAGS.content_weights)
+    style_weights = ast.literal_eval(FLAGS.style_weights)
 
-      # Computes stylized noise.
-      stylized_noise, _, _, _ = build_model.build_model(
-          tf.random_uniform(
-              [min(4, FLAGS.batch_size), FLAGS.image_size, FLAGS.image_size, 3]),
-          tf.slice(eval_style_inputs_, [0, 0, 0, 0],
-                   [min(4, FLAGS.batch_size), -1, -1, -1]),
-          trainable=False,
-          is_training=False,
-          reuse=None,
-          inception_end_point='Mixed_6e',
-          style_prediction_bottleneck=100,
-          adds_losses=False)
+    # Loads evaluation style images.
+    eval_style_inputs_, _, _ = image_utils.arbitrary_style_image_inputs(
+        FLAGS.eval_style_dataset_file,
+        batch_size=FLAGS.batch_size,
+        image_size=FLAGS.image_size,
+        center_crop=True,
+        shuffle=True,
+        augment_style_images=False,
+        random_style_image_size=False)
 
-      # Computes stylized images.
-      stylized_images, _, loss_dict, _ = build_model.build_model(
-          eval_content_inputs_,
-          eval_style_inputs_,
-          trainable=False,
-          is_training=False,
-          reuse=True,
-          inception_end_point='Mixed_6e',
-          style_prediction_bottleneck=100,
-          adds_losses=True,
-          content_weights=content_weights,
-          style_weights=style_weights,
-          total_variation_weight=FLAGS.total_variation_weight)
+    # Computes stylized noise.
+    stylized_noise, _, _, _ = build_model.build_model(
+        tf.random_uniform(
+            [min(4, FLAGS.batch_size), FLAGS.image_size, FLAGS.image_size, 3]),
+        tf.slice(eval_style_inputs_, [0, 0, 0, 0],
+                 [min(4, FLAGS.batch_size), -1, -1, -1]),
+        trainable=False,
+        is_training=False,
+        reuse=None,
+        inception_end_point='Mixed_6e',
+        style_prediction_bottleneck=100,
+        adds_losses=False)
 
-      # Adds Image summaries to the tensorboard.
-      tf.summary.image('image/{}/0_eval_content_inputs'.format(FLAGS.eval_name),
-                       eval_content_inputs_, 4)
-      tf.summary.image('image/{}/1_eval_style_inputs'.format(FLAGS.eval_name),
-                       eval_style_inputs_, 4)
-      tf.summary.image('image/{}/2_eval_stylized_images'.format(FLAGS.eval_name),
-                       stylized_images, 4)
-      tf.summary.image('image/{}/3_stylized_noise'.format(FLAGS.eval_name),
-                       stylized_noise, 4)
+    # Computes stylized images.
+    stylized_images, _, loss_dict, _ = build_model.build_model(
+        eval_content_inputs_,
+        eval_style_inputs_,
+        trainable=False,
+        is_training=False,
+        reuse=True,
+        inception_end_point='Mixed_6e',
+        style_prediction_bottleneck=100,
+        adds_losses=True,
+        content_weights=content_weights,
+        style_weights=style_weights,
+        total_variation_weight=FLAGS.total_variation_weight)
 
-      metrics = {}
-      for key, value in loss_dict.iteritems():
-        metrics[key] = tf.metrics.mean(value)
+    # Adds Image summaries to the tensorboard.
+    tf.summary.image('image/{}/0_eval_content_inputs'.format(FLAGS.eval_name),
+                     eval_content_inputs_, 4)
+    tf.summary.image('image/{}/1_eval_style_inputs'.format(FLAGS.eval_name),
+                     eval_style_inputs_, 4)
+    tf.summary.image('image/{}/2_eval_stylized_images'.format(FLAGS.eval_name),
+                     stylized_images, 4)
+    tf.summary.image('image/{}/3_stylized_noise'.format(FLAGS.eval_name),
+                     stylized_noise, 4)
 
-      names_values, names_updates = slim.metrics.aggregate_metric_map(metrics)
-      for name, value in names_values.iteritems():
-        slim.summaries.add_scalar_summary(value, name, print_summary=True)
-      eval_op = names_updates.values()
-      num_evals = FLAGS.num_evaluation_styles / FLAGS.batch_size
+    metrics = {}
+    for key, value in loss_dict.iteritems():
+      metrics[key] = tf.metrics.mean(value)
 
-      slim.evaluation.evaluation_loop(
-          master=FLAGS.master,
-          checkpoint_dir=FLAGS.checkpoint_dir,
-          logdir=FLAGS.eval_dir,
-          eval_op=eval_op,
-          num_evals=num_evals,
-          eval_interval_secs=FLAGS.eval_interval_secs)
+    names_values, names_updates = slim.metrics.aggregate_metric_map(metrics)
+    for name, value in names_values.iteritems():
+      slim.summaries.add_scalar_summary(value, name, print_summary=True)
+    eval_op = names_updates.values()
+    num_evals = FLAGS.num_evaluation_styles / FLAGS.batch_size
+
+    slim.evaluation.evaluation_loop(
+        master=FLAGS.master,
+        checkpoint_dir=FLAGS.checkpoint_dir,
+        logdir=FLAGS.eval_dir,
+        eval_op=eval_op,
+        num_evals=num_evals,
+        eval_interval_secs=FLAGS.eval_interval_secs)
 
 
 if __name__ == '__main__':
