@@ -48,7 +48,7 @@ $ arbitrary_image_stylization_with_weights \
 
 #### Example results
 <p align='center'>
-  <img src='' width="140px">
+  <img src='images/white.jpg' width="140px">
   <img src='images/style_images/clouds-over-bor-1940_sq.jpg' width="140px">
   <img src='images/style_images/towers_1916_sq.jpg' width="140px">
   <img src='images/style_images/black_zigzag.jpg' width="140px">
@@ -94,8 +94,8 @@ $ arbitrary_image_stylization_with_weights \
 
 <table cellspacing="0" cellpadding="0" border-spacing="0" style="border-collapse: collapse; border: none;" >
 <tr style="border-collapse:collapse; border:none;">
-<th width="12.5%">content image</th> <th width="12.5%">weight=0.0</th> <th width="12.5%">weight=0.2</th> <th width="12.5%">weight=0.4</th>
-<th width="12.5%">weight=0.6</th> <th width="12.5%">weight=0.8</th> <th width="12.5%">weight=1.0</th> <th width="12.5%">style image</th>
+<th width="12.5%">content image</th> <th width="12.5%">w=0.0</th> <th width="12.5%">w=0.2</th> <th width="12.5%">w=0.4</th>
+<th width="12.5%">w=0.6</th> <th width="12.5%">w=0.8</th> <th width="12.5%">w=1.0</th> <th width="12.5%">style image</th>
 </tr>
 <tr style="border-collapse:collapse; border:none;">
 <th><img src='images/content_images/statue_of_liberty_sq.jpg' style="line-height:0; display: block;"></th>
