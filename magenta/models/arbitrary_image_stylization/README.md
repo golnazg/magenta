@@ -82,7 +82,7 @@ $ arbitrary_image_stylization_with_weights \
   --checkpoint=/path/to/model.ckpt \
   --output_dir=/path/to/output_dir \
   --style_images_paths=style_images/*.jpg \
-  --content_images_paths=content_images/*.jpg \
+  --content_images_paths=content_images/statue_of_liberty_sq.jpg \
   --image_size=256 \
   --content_square_crop=False
   --style_image_size=256 \
@@ -92,20 +92,20 @@ $ arbitrary_image_stylization_with_weights \
 
 #### Example results
 
-<table cellspacing="0" cellpadding="0" border-spacing="0" border="0" style="border-collapse: collapse; border: none; font-size: 5px" >
-<tr style="border-collapse:collapse; border:none; font-size:5px">
+<table cellspacing="0" cellpadding="0" border-spacing="0" style="border-collapse: collapse; border: none;" >
+<tr style="border-collapse:collapse; border:none;">
 <th width="12.5%">content image</th> <th width="12.5%">weight=0.0</th> <th width="12.5%">weight=0.2</th> <th width="12.5%">weight=0.4</th>
 <th width="12.5%">weight=0.6</th> <th width="12.5%">weight=0.8</th> <th width="12.5%">weight=1.0</th> <th width="12.5%">style image</th>
 </tr>
 <tr style="border-collapse:collapse; border:none;">
-<th><img src='images/content_images/statue_of_liberty_sq.jpg' style="line-height:0; display: block; border:none;"></th>
-<th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_0.jpg' style="line-height:0; display:block; border:none;"></th>
+<th><img src='images/content_images/statue_of_liberty_sq.jpg' style="line-height:0; display: block;"></th>
+<th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_0.jpg' style="line-height:0; display:block;"></th>
 <th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_1.jpg' style="line-height:0; display:block;"></th>
 <th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_2.jpg' style="line-height:0; display:block;"></th>
 <th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_3.jpg' style="line-height:0; display:block;"></th>
 <th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_4.jpg' style="line-height:0; display:block;"></th>
 <th><img src='images/stylized_images_interpolation/statue_of_liberty_stylized_Theo_van_Doesburg_5.jpg' style="line-height:0; display:block;"></th>
-<th><img src='images/style_images/Theo_van_Doesburg_sq.jpg' style="line-height:0; display: block; padding: 0 0 0 0;"></th>
+<th><img src='images/style_images/Theo_van_Doesburg_sq.jpg' style="line-height:0; display: block;"></th>
 </tr>
 <tr style="border-collapse:collapse; border:none;">
 <th><img src='images/content_images/colva_beach_sq.jpg' style="line-height:0; display:block"></th>
@@ -115,7 +115,7 @@ $ arbitrary_image_stylization_with_weights \
 <th><img src='images/stylized_images_interpolation/colva_beach_stylized_bricks_3.jpg' style="line-height:0; display:block"></th>
 <th><img src='images/stylized_images_interpolation/colva_beach_stylized_bricks_4.jpg' style="line-height:0; display:block"></th>
 <th><img src='images/stylized_images_interpolation/colva_beach_stylized_bricks_5.jpg' style="line-height:0; display:block"></th>
-<th><img src='images/style_images/bricks_sq.jpg' style="line-height:0; display:block;  padding: 0 0 0 0;"></th>
+<th><img src='images/style_images/bricks_sq.jpg' style="line-height:0; display:block;"></th>
 </tr>
 </table>
 
