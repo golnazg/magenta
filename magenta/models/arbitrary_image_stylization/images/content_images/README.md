@@ -1,4 +1,4 @@
-IMAGE_SIZE
+Source of images:
 
 golden_gate
 https://commons.wikimedia.org/wiki/File:Golden_Gate_Bridge_from_Battery_Spencer.jpg

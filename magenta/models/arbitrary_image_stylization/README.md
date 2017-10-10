@@ -163,8 +163,9 @@ $ arbitrary_image_stylization_train \
 
 
 To run evaluation job use the following command.
+
 Note that if you are running the training job on a GPU, then you can
-run a separate evaluation job on the CPU by setting CUDA_VISIBLE_DEVICES=' '.
+run a separate evaluation job on the CPU by setting CUDA_VISIBLE_DEVICES=' ':
 
 ```bash
 $CUDA_VISIBLE_DEVICES= arbitrary_image_stylization_evaluate \
