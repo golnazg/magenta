@@ -777,3 +777,20 @@ def center_crop_resize_image(image, image_size):
 
   return tf.expand_dims(image, 0)
 
+
+def resize_image(image, image_size):
+  """Resize input image preserving the original aspect ratio.
+
+  Args:
+    image: A 3-D image `Tensor`.
+    image_size: int, desired size of the smallest size of image after resize.
+
+  Returns:
+    A 4-D tensor of shape [1, image_size, image_size, 3] and dtype float32,
+    with values in [0, 1].
+  """
+  image = _aspect_preserving_resize(image, image_size)
+  image = tf.to_float(image) / 255.0
+
+  return tf.expand_dims(image, 0)
+

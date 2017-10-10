@@ -43,10 +43,10 @@ flags.DEFINE_string('content_images_paths', None, 'Paths to the content images'
                     'for evaluation.')
 flags.DEFINE_string('output_dir', None, 'Output directory.')
 flags.DEFINE_integer('image_size', 256, 'Image size.')
-flags.DEFINE_boolean('content_square_crop', True, 'Wheather to center crop'
+flags.DEFINE_boolean('content_square_crop', False, 'Wheather to center crop'
                      'the content image to be a square or not.')
 flags.DEFINE_integer('style_image_size', 256, 'Style image size.')
-flags.DEFINE_boolean('style_square_crop', True, 'Wheather to center crop'
+flags.DEFINE_boolean('style_square_crop', False, 'Wheather to center crop'
                       'the style image to be a square or not.')
 flags.DEFINE_integer('maximum_styles_to_evaluate', 1024, 'Maximum number of'
                      'styles to evaluate.')
@@ -71,11 +71,8 @@ def main(unused_argv=None):
       style_img_preprocessed = image_utils.center_crop_resize_image(
         style_img_ph, FLAGS.style_image_size)
     else:
-      style_img_preprocessed = image_utils._aspect_preserving_resize(
+      style_img_preprocessed = image_utils.resize_image(
         style_img_ph, FLAGS.style_image_size)
-      style_img_preprocessed = tf.expand_dims(style_img_preprocessed, 0)
-      style_img_preprocessed = tf.to_float(style_img_preprocessed) / 255.0
-
 
     # Defines place holder for the content image.
     content_img_ph = tf.placeholder(tf.float32, shape=[None, None, 3])
@@ -83,10 +80,8 @@ def main(unused_argv=None):
       content_img_preprocessed = image_utils.center_crop_resize_image(
         content_img_ph, FLAGS.image_size)
     else:
-      content_img_preprocessed = image_utils._aspect_preserving_resize(
+      content_img_preprocessed = image_utils.resize_image(
         content_img_ph, FLAGS.image_size)
-      content_img_preprocessed = tf.expand_dims(content_img_preprocessed, 0)
-      content_img_preprocessed = tf.to_float(content_img_preprocessed) / 255.0
 
     # Defines the model.
     stylized_images, _, _, bottleneck_feat = build_model.build_model(
@@ -177,7 +172,6 @@ def main(unused_argv=None):
           # Saves stylized image.
           image_utils.save_np_image(
               stylized_image_res,
-              #os.path.join(FLAGS.output_dir, '%s_C_%s_%d.jpg' %
               os.path.join(FLAGS.output_dir, '%s_stylized_%s_%d.jpg' %
                            (content_img_name, style_img_name, interp_i)))
 
