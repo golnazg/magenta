@@ -175,17 +175,20 @@ def total_variation_loss(stylized_inputs, total_variation_weight):
     total_variation_weight: Weight of total variation loss.
 
   Returns:
-    A float32 scalar containing the total variational loss.
+    Tensor for the total variation loss, dict mapping loss names to losses.
   """
-  batch_size, height, width, channels = [x.value for x in
-                                         stylized_inputs.get_shape()]
-  y_size = np.float32((height - 1) * width * channels)
-  x_size = np.float32(height * (width - 1) * channels)
+  shape = tf.shape(stylized_inputs)
+  batch_size = shape[0]
+  height = shape[1]
+  width = shape[2]
+  channels = shape[3]
+  y_size = tf.to_float((height - 1) * width * channels)
+  x_size = tf.to_float(height * (width - 1) * channels)
   y_loss = tf.nn.l2_loss(stylized_inputs[:, 1:, :, :] -
-                         stylized_inputs[:, :height - 1, :, :]) / y_size
+                         stylized_inputs[:, : -1, :, :]) / y_size
   x_loss = tf.nn.l2_loss(stylized_inputs[:, :, 1:, :] -
-                         stylized_inputs[:, :, :width - 1, :]) / x_size
-  loss = (y_loss + x_loss) / batch_size
+                         stylized_inputs[:, :, : -1, :]) / x_size
+  loss = (y_loss + x_loss) / tf.to_float(batch_size)
   weighted_loss = loss * total_variation_weight
   return weighted_loss, {'total_variation_loss': loss,
                          'weighted_total_variation_loss': weighted_loss}

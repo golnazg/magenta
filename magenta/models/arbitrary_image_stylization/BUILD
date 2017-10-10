@@ -77,6 +77,7 @@ py_library(
     ],
     srcs_version = "PY2AND3",
     deps = [
+        "//magenta/models/image_stylization:model",
         "//magenta/models/image_stylization:ops",
         # tensorflow dep
     ],

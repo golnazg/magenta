@@ -35,10 +35,8 @@ DEFAULT_STYLE_WEIGHTS = ('{"vgg_16/conv1": 1e-3, "vgg_16/conv2": 1e-3,'
                          ' "vgg_16/conv3": 1e-3, "vgg_16/conv4": 1e-3}')
 
 flags = tf.app.flags
-flags.DEFINE_boolean('check_numerics', True,
-                     'Add a NaN/Inf check to gammas and betas')
 flags.DEFINE_float('clip_gradient_norm', 0, 'Clip gradients to this norm')
-flags.DEFINE_float('learning_rate', 1e-5, 'Learning rate')
+flags.DEFINE_float('learning_rate', 0.5e-5, 'Learning rate')
 flags.DEFINE_float('total_variation_weight', 1e4, 'Total variation weight')
 flags.DEFINE_string('content_weights', DEFAULT_CONTENT_WEIGHTS,
                     'Content weights')

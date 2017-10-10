@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import print_function
 
 import ast
-import os
 
 import tensorflow as tf
 
@@ -53,16 +52,13 @@ flags.DEFINE_string('master', '',
 flags.DEFINE_string('eval_name', 'eval', 'Name of evaluation.')
 flags.DEFINE_string('eval_style_dataset_file', None, 'path to the evaluation'
                     'style dataset file.')
-flags.DEFINE_string('cuda_visible_devices', '', 'Use empty string to run'
-                     'evaluation task on the CPU or specify a GPU number eg. 0.')
 FLAGS = flags.FLAGS
 
 
 def main(_):
   tf.logging.set_verbosity(tf.logging.INFO)
-  os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.cuda_visible_devices
 
-  with tf.Graph().as_default():# and tf.Session(config=session_conf).as_default():
+  with tf.Graph().as_default():
     # Loads content images.
     eval_content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
 

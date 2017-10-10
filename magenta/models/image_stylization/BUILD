@@ -139,6 +139,10 @@ py_library(
     srcs = [
         "model.py",
     ],
+    visibility = [
+        "//magenta/models/image_stylization:__subpackages__",
+        "//magenta/models/arbitrary_image_stylization:__subpackages__",
+    ],
     srcs_version = "PY2AND3",
     deps = [
         ":ops",

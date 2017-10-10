@@ -42,8 +42,12 @@ flags.DEFINE_string('style_images_paths', None, 'Paths to the style images'
 flags.DEFINE_string('content_images_paths', None, 'Paths to the content images'
                     'for evaluation.')
 flags.DEFINE_string('output_dir', None, 'Output directory.')
-flags.DEFINE_integer('image_size', 300, 'Image size.')
-flags.DEFINE_integer('style_image_size', 300, 'Style image size.')
+flags.DEFINE_integer('image_size', 256, 'Image size.')
+flags.DEFINE_boolean('content_square_crop', True, 'Wheather to center crop'
+                     'the content image to be a square or not.')
+flags.DEFINE_integer('style_image_size', 256, 'Style image size.')
+flags.DEFINE_boolean('style_square_crop', True, 'Wheather to center crop'
+                      'the style image to be a square or not.')
 flags.DEFINE_integer('maximum_styles_to_evaluate', 1024, 'Maximum number of'
                      'styles to evaluate.')
 flags.DEFINE_string('interpolation_weights', '[1.0]', 'List of weights'
@@ -63,18 +67,31 @@ def main(unused_argv=None):
   with tf.Graph().as_default(), tf.Session() as sess:
     # Defines place holder for the style image.
     style_img_ph = tf.placeholder(tf.float32, shape=[None, None, 3])
-    style_img_croped_resized = image_utils.center_crop_resize_image(
+    if FLAGS.style_square_crop:
+      style_img_preprocessed = image_utils.center_crop_resize_image(
         style_img_ph, FLAGS.style_image_size)
+    else:
+      style_img_preprocessed = image_utils._aspect_preserving_resize(
+        style_img_ph, FLAGS.style_image_size)
+      style_img_preprocessed = tf.expand_dims(style_img_preprocessed, 0)
+      style_img_preprocessed = tf.to_float(style_img_preprocessed) / 255.0
+
 
     # Defines place holder for the content image.
     content_img_ph = tf.placeholder(tf.float32, shape=[None, None, 3])
-    content_img_cropped_resized = image_utils.center_crop_resize_image(
+    if FLAGS.content_square_crop:
+      content_img_preprocessed = image_utils.center_crop_resize_image(
         content_img_ph, FLAGS.image_size)
+    else:
+      content_img_preprocessed = image_utils._aspect_preserving_resize(
+        content_img_ph, FLAGS.image_size)
+      content_img_preprocessed = tf.expand_dims(content_img_preprocessed, 0)
+      content_img_preprocessed = tf.to_float(content_img_preprocessed) / 255.0
 
     # Defines the model.
     stylized_images, _, _, bottleneck_feat = build_model.build_model(
-        content_img_cropped_resized,
-        style_img_croped_resized,
+        content_img_preprocessed,
+        style_img_preprocessed,
         trainable=False,
         is_training=False,
         inception_end_point='Mixed_6e',
@@ -107,9 +124,9 @@ def main(unused_argv=None):
                                                                          3]
       content_img_name = os.path.basename(content_img_path)[:-4]
 
-      # Saves cropped resized content image.
+      # Saves preprocessed content image.
       inp_img_croped_resized_np = sess.run(
-          content_img_cropped_resized,
+          content_img_preprocessed,
           feed_dict={content_img_ph: content_img_np})
       image_utils.save_np_image(inp_img_croped_resized_np,
                                 os.path.join(FLAGS.output_dir,
@@ -132,9 +149,9 @@ def main(unused_argv=None):
                           (content_i, content_img_name, style_i,
                            style_img_name))
 
-        # Saves cropped resized style image.
+        # Saves preprocessed style image.
         style_img_croped_resized_np = sess.run(
-            style_img_croped_resized, feed_dict={style_img_ph: style_image_np})
+            style_img_preprocessed, feed_dict={style_img_ph: style_image_np})
         image_utils.save_np_image(style_img_croped_resized_np,
                                   os.path.join(FLAGS.output_dir,
                                                '%s.jpg' % (style_img_name)))
@@ -160,6 +177,7 @@ def main(unused_argv=None):
           # Saves stylized image.
           image_utils.save_np_image(
               stylized_image_res,
+              #os.path.join(FLAGS.output_dir, '%s_C_%s_%d.jpg' %
               os.path.join(FLAGS.output_dir, '%s_stylized_%s_%d.jpg' %
                            (content_img_name, style_img_name, interp_i)))
 
