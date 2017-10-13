@@ -36,7 +36,7 @@ following command.
 # To use images in style_images and content_images directories.
 $ cd /path/to/arbitrary_image_stylization
 $ arbitrary_image_stylization_with_weights \
-  --checkpoint=/path/to/model.ckpt \
+  --checkpoint=/path/to/style_transfer_model.ckpt \
   --output_dir=/path/to/output_dir \
   --style_images_paths=style_images/*.jpg \
   --content_images_paths=content_images/*.jpg \
@@ -79,7 +79,7 @@ $ cd /path/to/arbitrary_image_stylization
 # corresponds to a fully stylized photograph.
 $ INTERPOLATION_WEIGHTS='[0.0 0.2 0.4 0.6 0.8 1.0]'
 $ arbitrary_image_stylization_with_weights \
-  --checkpoint=/path/to/model.ckpt \
+  --checkpoint=/path/to/style_transfer_model.ckpt \
   --output_dir=/path/to/output_dir \
   --style_images_paths=style_images/*.jpg \
   --content_images_paths=content_images/statue_of_liberty_sq.jpg \
@@ -133,6 +133,9 @@ To train your own model, you need to have the following:
 3. A [trained VGG model checkpoint](http://download.tensorflow.org/models/vgg_16_2016_08_28.tar.gz).
 4. A [trained Inception-v3 model
    checkpoint](http://download.tensorflow.org/models/inception_v3_2016_08_28.tar.gz).
+5. Make sure that you have checkout the slim
+   [slim](https://github.com/tensorflow/tensorflow/blob/e062447136faa0a3513e3b0690598fee5c16a5db/tensorflow/contrib/slim/README.md)
+   repository.
 
 A first step is to prepare the style images and create a TFRecord file.
 The following command may be used for creating the TFRecord file.
@@ -148,7 +151,16 @@ $ image_stylization_create_dataset \
     --compute_gram_matrices=False
 ```
 
-Then, to train a model:
+Then, to train a model use the following command.
+
+We trained our model on PBN and DTD training images for about 3M steps.
+For a smaller dataset you will need smaller number of steps, but the model
+will have less generalization to unobserved styles.
+We trained our model using 8 GPUS. But, it's possible to train the model
+using only one gpu. Just it will talke more time. For training on different
+training data you may need to change the style and content weights. Eg. when
+you have stronger textures, you will need a higher content weights.
+You may also need to change the learning rate.
 
 ```bash
 logdir=/path/to/logdir
@@ -181,4 +193,3 @@ To see the progress of training, run TensorBoard on the resulting log directory:
 ```bash
 $ tensorboard --logdir="$logdir"
 ```
-
