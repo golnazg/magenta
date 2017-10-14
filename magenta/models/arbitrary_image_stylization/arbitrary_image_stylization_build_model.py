@@ -239,3 +239,4 @@ def _inception_v3_arg_scope(is_training=True,
         normalizer_fn=normalizer_fn,
         normalizer_params=batch_norm_params) as sc:
       return sc
+

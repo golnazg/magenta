@@ -237,14 +237,14 @@ def style_image_inputs(style_dataset_file, batch_size=None, image_size=None,
 
 
 def arbitrary_style_image_inputs(style_dataset_file,
-                       batch_size=None,
-                       image_size=None,
-                       center_crop=True,
-                       shuffle=True,
-                       augment_style_images=False,
-                       random_style_image_size=False,
-                       min_rand_image_size=128,
-                       max_rand_image_size=300):
+                                 batch_size=None,
+                                 image_size=None,
+                                 center_crop=True,
+                                 shuffle=True,
+                                 augment_style_images=False,
+                                 random_style_image_size=False,
+                                 min_rand_image_size=128,
+                                 max_rand_image_size=300):
   """Loads a batch of random style image given the path of tfrecord dataset.
 
   This method does not return pre-compute Gram matrices for the images like
@@ -291,8 +291,7 @@ def arbitrary_style_image_inputs(style_dataset_file,
   if batch_size is not None and not center_crop and not augment_style_images:
     raise ValueError(
         'batching requires same image sizes (Set center-cropping or '
-        'augment_style_images to true)'
-    )
+        'augment_style_images to true)')
 
   with tf.name_scope('style_image_processing'):
     # Force all input processing onto CPU in order to reserve the GPU for the
@@ -342,15 +341,13 @@ def arbitrary_style_image_inputs(style_dataset_file,
               minval=image_size + 2,
               maxval=image_size + 200,
               dtype=dtypes.int32)
-          image = _aspect_preserving_resize(image,
-                                                       random_larger_image_size)
-          image = tf.random_crop(image, size = [image_size, image_size, image_channels])
+          image = _aspect_preserving_resize(image, random_larger_image_size)
+          image = tf.random_crop(
+              image, size=[image_size, image_size, image_channels])
           image.set_shape([image_size, image_size, image_channels])
 
-          image_orig = _aspect_preserving_resize(
-              image_orig, image_size + 2)
-          image_orig = _central_crop([image_orig], image_size,
-                                                image_size)[0]
+          image_orig = _aspect_preserving_resize(image_orig, image_size + 2)
+          image_orig = _central_crop([image_orig], image_size, image_size)[0]
           image_orig.set_shape([image_size, image_size, 3])
         elif center_crop:
           image = _aspect_preserving_resize(image, image_size + 2)
@@ -374,11 +371,11 @@ def arbitrary_style_image_inputs(style_dataset_file,
         # Selects a random size for the style images and resizes all the images
         # in the batch to that size.
         image = _aspect_preserving_resize(image,
-                                                     random_ops.random_uniform(
-                                                         [],
-                                                         minval=min_rand_image_size,
-                                                         maxval=max_rand_image_size,
-                                                         dtype=dtypes.int32))
+                                          random_ops.random_uniform(
+                                              [],
+                                              minval=min_rand_image_size,
+                                              maxval=max_rand_image_size,
+                                              dtype=dtypes.int32))
 
       return image, label, image_orig
 
@@ -769,8 +766,7 @@ def center_crop_resize_image(image, image_size):
   """
   shape = tf.shape(image)
   small_side = tf.minimum(shape[0], shape[1])
-  image = tf.image.resize_image_with_crop_or_pad(
-      image, small_side, small_side)
+  image = tf.image.resize_image_with_crop_or_pad(image, small_side, small_side)
   image = tf.to_float(image) / 255.0
 
   image = tf.image.resize_images(image, tf.constant([image_size, image_size]))

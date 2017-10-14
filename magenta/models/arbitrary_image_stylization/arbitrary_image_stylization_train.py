@@ -31,8 +31,8 @@ from magenta.models.image_stylization import vgg
 slim = tf.contrib.slim
 
 DEFAULT_CONTENT_WEIGHTS = '{"vgg_16/conv3": 1}'
-DEFAULT_STYLE_WEIGHTS = ('{"vgg_16/conv1": 1e-3, "vgg_16/conv2": 1e-3,'
-                         ' "vgg_16/conv3": 1e-3, "vgg_16/conv4": 1e-3}')
+DEFAULT_STYLE_WEIGHTS = ('{"vgg_16/conv1": 0.5e-3, "vgg_16/conv2": 0.5e-3,'
+                         ' "vgg_16/conv3": 0.5e-3, "vgg_16/conv4": 0.5e-3}')
 
 flags = tf.app.flags
 flags.DEFINE_float('clip_gradient_norm', 0, 'Clip gradients to this norm')
@@ -60,8 +60,7 @@ flags.DEFINE_integer('save_interval_secs', 15,
 flags.DEFINE_integer('task', 0, 'Task ID. Used when training with multiple '
                      'workers to identify each worker.')
 flags.DEFINE_integer('train_steps', 8000000, 'Number of training steps.')
-flags.DEFINE_string('master', '',
-                    'BNS name of the TensorFlow master to use.')
+flags.DEFINE_string('master', '', 'BNS name of the TensorFlow master to use.')
 flags.DEFINE_string('style_dataset_file', None, 'Style dataset file.')
 flags.DEFINE_string('train_dir', None,
                     'Directory for checkpoints and summaries.')
@@ -80,17 +79,19 @@ def main(unused_argv=None):
     with tf.device(
         tf.train.replica_device_setter(FLAGS.ps_tasks, worker_device=device)):
       # Loads content images.
-      content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
+      content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size,
+                                                       FLAGS.image_size)
 
       # Loads style images.
-      [style_inputs_, _, style_inputs_orig_] = image_utils.arbitrary_style_image_inputs(
-          FLAGS.style_dataset_file,
-          batch_size=FLAGS.batch_size,
-          image_size=FLAGS.image_size,
-          shuffle=True,
-          center_crop=FLAGS.center_crop,
-          augment_style_images=FLAGS.augment_style_images,
-          random_style_image_size=FLAGS.random_style_image_size)
+      [style_inputs_, _,
+       style_inputs_orig_] = image_utils.arbitrary_style_image_inputs(
+           FLAGS.style_dataset_file,
+           batch_size=FLAGS.batch_size,
+           image_size=FLAGS.image_size,
+           shuffle=True,
+           center_crop=FLAGS.center_crop,
+           augment_style_images=FLAGS.augment_style_images,
+           random_style_image_size=FLAGS.random_style_image_size)
 
     with tf.device(tf.train.replica_device_setter(FLAGS.ps_tasks)):
       # Process style and content weight flags.
@@ -129,9 +130,8 @@ def main(unused_argv=None):
           summarize_gradients=False)
 
       # Function to restore VGG16 parameters.
-      init_fn_vgg = slim.assign_from_checkpoint_fn(
-          vgg.checkpoint_file(),
-          slim.get_variables('vgg_16'))
+      init_fn_vgg = slim.assign_from_checkpoint_fn(vgg.checkpoint_file(),
+                                                   slim.get_variables('vgg_16'))
 
       # Function to restore Inception_v3 parameters.
       inception_variables_dict = {
@@ -139,8 +139,7 @@ def main(unused_argv=None):
           for var in slim.get_model_variables('InceptionV3')
       }
       init_fn_inception = slim.assign_from_checkpoint_fn(
-          FLAGS.inception_v3_checkpoint,
-          inception_variables_dict)
+          FLAGS.inception_v3_checkpoint, inception_variables_dict)
 
       # Function to restore VGG16 and Inception_v3 parameters.
       def init_sub_networks(session):
@@ -161,3 +160,4 @@ def main(unused_argv=None):
 
 if __name__ == '__main__':
   tf.app.run()
+

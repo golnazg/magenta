@@ -17,7 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# internal imports
+
 import tensorflow as tf
 
 from magenta.models.image_stylization import ops
@@ -66,8 +66,12 @@ def transform(input_, normalizer_fn=ops.conditional_instance_norm,
         return upsampling(h, 9, 1, 3, 'conv3', activation_fn=tf.nn.sigmoid)
 
 
-def conv2d(input_, kernel_size, stride, num_outputs, scope,
-            activation_fn=tf.nn.relu):
+def conv2d(input_,
+           kernel_size,
+           stride,
+           num_outputs,
+           scope,
+           activation_fn=tf.nn.relu):
   """Same-padded convolution with mirror padding instead of zero-padding.
 
   This function expects `kernel_size` to be odd.
@@ -102,8 +106,12 @@ def conv2d(input_, kernel_size, stride, num_outputs, scope,
       scope=scope)
 
 
-def upsampling(input_, kernel_size, stride, num_outputs, scope,
-                activation_fn=tf.nn.relu):
+def upsampling(input_,
+               kernel_size,
+               stride,
+               num_outputs,
+               scope,
+               activation_fn=tf.nn.relu):
   """A smooth replacement of a same-padded transposed convolution.
 
   This function first computes a nearest-neighbor upsampling of the input by a
@@ -133,8 +141,13 @@ def upsampling(input_, kernel_size, stride, num_outputs, scope,
     width = shape[2]
     upsampled_input = tf.image.resize_nearest_neighbor(
         input_, [stride * height, stride * width])
-    return conv2d(upsampled_input, kernel_size, 1, num_outputs, 'conv',
-                   activation_fn=activation_fn)
+    return conv2d(
+        upsampled_input,
+        kernel_size,
+        1,
+        num_outputs,
+        'conv',
+        activation_fn=activation_fn)
 
 
 def residual_block(input_, kernel_size, scope, activation_fn=tf.nn.relu):
@@ -161,3 +174,4 @@ def residual_block(input_, kernel_size, scope, activation_fn=tf.nn.relu):
     h_1 = conv2d(input_, kernel_size, 1, num_outputs, 'conv1', activation_fn)
     h_2 = conv2d(h_1, kernel_size, 1, num_outputs, 'conv2', None)
     return input_ + h_2
+

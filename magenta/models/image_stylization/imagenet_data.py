@@ -116,3 +116,4 @@ class ImagenetData(object):
       Reader object that reads the data set.
     """
     return tf.TFRecordReader()
+

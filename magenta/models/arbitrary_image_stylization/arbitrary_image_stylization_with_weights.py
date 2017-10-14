@@ -47,7 +47,7 @@ flags.DEFINE_boolean('content_square_crop', False, 'Wheather to center crop'
                      'the content image to be a square or not.')
 flags.DEFINE_integer('style_image_size', 256, 'Style image size.')
 flags.DEFINE_boolean('style_square_crop', False, 'Wheather to center crop'
-                      'the style image to be a square or not.')
+                     'the style image to be a square or not.')
 flags.DEFINE_integer('maximum_styles_to_evaluate', 1024, 'Maximum number of'
                      'styles to evaluate.')
 flags.DEFINE_string('interpolation_weights', '[1.0]', 'List of weights'
@@ -69,19 +69,19 @@ def main(unused_argv=None):
     style_img_ph = tf.placeholder(tf.float32, shape=[None, None, 3])
     if FLAGS.style_square_crop:
       style_img_preprocessed = image_utils.center_crop_resize_image(
-        style_img_ph, FLAGS.style_image_size)
+          style_img_ph, FLAGS.style_image_size)
     else:
-      style_img_preprocessed = image_utils.resize_image(
-        style_img_ph, FLAGS.style_image_size)
+      style_img_preprocessed = image_utils.resize_image(style_img_ph,
+                                                        FLAGS.style_image_size)
 
     # Defines place holder for the content image.
     content_img_ph = tf.placeholder(tf.float32, shape=[None, None, 3])
     if FLAGS.content_square_crop:
       content_img_preprocessed = image_utils.center_crop_resize_image(
-        content_img_ph, FLAGS.image_size)
+          content_img_ph, FLAGS.image_size)
     else:
       content_img_preprocessed = image_utils.resize_image(
-        content_img_ph, FLAGS.image_size)
+          content_img_ph, FLAGS.image_size)
 
     # Defines the model.
     stylized_images, _, _, bottleneck_feat = build_model.build_model(
@@ -121,8 +121,9 @@ def main(unused_argv=None):
 
       # Saves preprocessed content image.
       inp_img_croped_resized_np = sess.run(
-          content_img_preprocessed,
-          feed_dict={content_img_ph: content_img_np})
+          content_img_preprocessed, feed_dict={
+              content_img_ph: content_img_np
+          })
       image_utils.save_np_image(inp_img_croped_resized_np,
                                 os.path.join(FLAGS.output_dir,
                                              '%s.jpg' % (content_img_name)))
@@ -146,7 +147,9 @@ def main(unused_argv=None):
 
         # Saves preprocessed style image.
         style_img_croped_resized_np = sess.run(
-            style_img_preprocessed, feed_dict={style_img_ph: style_image_np})
+            style_img_preprocessed, feed_dict={
+                style_img_ph: style_image_np
+            })
         image_utils.save_np_image(style_img_croped_resized_np,
                                   os.path.join(FLAGS.output_dir,
                                                '%s.jpg' % (style_img_name)))

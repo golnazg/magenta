@@ -26,7 +26,6 @@ from __future__ import print_function
 import io
 import os
 
-# internal imports
 
 import scipy
 import tensorflow as tf
@@ -95,8 +94,10 @@ def main(unused_argv):
 
       example = tf.train.Example(features=tf.train.Features(feature=feature))
       writer.write(example.SerializeToString())
-  tf.logging.info('Output TFRecord file is saved at %s' % os.path.expanduser(FLAGS.output_file))
+  tf.logging.info('Output TFRecord file is saved at %s' % os.path.expanduser(
+      FLAGS.output_file))
 
 
 if __name__ == '__main__':
   tf.app.run(main)
+

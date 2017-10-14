@@ -221,9 +221,13 @@ def weighted_instance_norm(inputs,
 
 
 @slim.add_arg_scope
-def conditional_style_norm(inputs, style_params=None, activation_fn=None,
-                           reuse=None, outputs_collections=None,
-                           check_numerics=True, scope=None):
+def conditional_style_norm(inputs,
+                           style_params=None,
+                           activation_fn=None,
+                           reuse=None,
+                           outputs_collections=None,
+                           check_numerics=True,
+                           scope=None):
   """Conditional style normalization.
 
   Can be used as a normalizer function for conv2d. This method is similar
@@ -254,8 +258,8 @@ def conditional_style_norm(inputs, style_params=None, activation_fn=None,
     ValueError: if rank or last dimension of `inputs` is undefined, or if the
         input doesn't have 4 dimensions.
   """
-  with variable_scope.variable_scope(scope, 'StyleNorm', [inputs],
-                                     reuse=reuse) as sc:
+  with variable_scope.variable_scope(
+      scope, 'StyleNorm', [inputs], reuse=reuse) as sc:
     inputs = framework_ops.convert_to_tensor(inputs)
     inputs_shape = inputs.get_shape()
     inputs_rank = inputs_shape.ndims
@@ -266,8 +270,8 @@ def conditional_style_norm(inputs, style_params=None, activation_fn=None,
     axis = [1, 2]
     params_shape = inputs_shape[-1:]
     if not params_shape.is_fully_defined():
-      raise ValueError('Inputs %s has undefined last dimension %s.' % (
-          inputs.name, params_shape))
+      raise ValueError('Inputs %s has undefined last dimension %s.' %
+                       (inputs.name, params_shape))
 
     def _style_parameters(name):
       """Gets style normalization parameters."""
@@ -290,11 +294,11 @@ def conditional_style_norm(inputs, style_params=None, activation_fn=None,
 
     # Compute layer normalization using the batch_normalization function.
     variance_epsilon = 1E-5
-    outputs = tf.nn.batch_normalization(
-        inputs, mean, variance, beta, gamma, variance_epsilon)
+    outputs = tf.nn.batch_normalization(inputs, mean, variance, beta, gamma,
+                                        variance_epsilon)
     outputs.set_shape(inputs_shape)
     if activation_fn:
       outputs = activation_fn(outputs)
     return slim.utils.collect_named_outputs(outputs_collections,
-                                            sc.original_name_scope,
-                                            outputs)
+                                            sc.original_name_scope, outputs)
+

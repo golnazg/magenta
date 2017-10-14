@@ -71,7 +71,8 @@ def transform(input_, normalizer_fn=None, normalizer_params=None,
       with tf.variable_scope('expand'):
         h = model_util.upsampling(h, 3, 2, 64, 'conv1')
         h = model_util.upsampling(h, 3, 2, 32, 'conv2')
-        return model_util.upsampling(h, 9, 1, 3, 'conv3', activation_fn=tf.nn.sigmoid)
+        return model_util.upsampling(
+            h, 9, 1, 3, 'conv3', activation_fn=tf.nn.sigmoid)
 
 
 def style_normalization_activations(pre_name='transformer',

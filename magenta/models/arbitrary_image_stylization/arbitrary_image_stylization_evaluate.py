@@ -47,8 +47,7 @@ flags.DEFINE_string('eval_dir', None,
                     'Directory where the results are saved to.')
 flags.DEFINE_string('checkpoint_dir', None,
                     'Directory for checkpoints and summaries')
-flags.DEFINE_string('master', '',
-                    'BNS name of the TensorFlow master to use.')
+flags.DEFINE_string('master', '', 'BNS name of the TensorFlow master to use.')
 flags.DEFINE_string('eval_name', 'eval', 'Name of evaluation.')
 flags.DEFINE_string('eval_style_dataset_file', None, 'path to the evaluation'
                     'style dataset file.')
@@ -60,7 +59,8 @@ def main(_):
 
   with tf.Graph().as_default():
     # Loads content images.
-    eval_content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size, FLAGS.image_size)
+    eval_content_inputs_, _ = image_utils.imagenet_inputs(
+        FLAGS.batch_size, FLAGS.image_size)
 
     # Process style and content weight flags.
     content_weights = ast.literal_eval(FLAGS.content_weights)
@@ -134,3 +134,4 @@ def main(_):
 
 if __name__ == '__main__':
   tf.app.run()
+

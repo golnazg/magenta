@@ -17,7 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# internal imports
 
 import numpy as np
 import tensorflow as tf
@@ -149,8 +148,7 @@ def style_loss(style_gram_matrices, end_points, style_weights):
     # Reducing over all but the batch axis before multiplying with the style
     # weights allows to use multiple sets of style weights in a single batch.
     loss = tf.reduce_mean(
-        (gram_matrix(end_points[name]) - style_gram_matrices[name]) ** 2,
-        [1, 2])
+        (gram_matrix(end_points[name]) - style_gram_matrices[name])**2, [1, 2])
     weighted_style_loss = tf.reduce_mean(weight * loss)
     loss = tf.reduce_mean(loss)
 
@@ -184,14 +182,16 @@ def total_variation_loss(stylized_inputs, total_variation_weight):
   channels = shape[3]
   y_size = tf.to_float((height - 1) * width * channels)
   x_size = tf.to_float(height * (width - 1) * channels)
-  y_loss = tf.nn.l2_loss(stylized_inputs[:, 1:, :, :] -
-                         stylized_inputs[:, : -1, :, :]) / y_size
-  x_loss = tf.nn.l2_loss(stylized_inputs[:, :, 1:, :] -
-                         stylized_inputs[:, :, : -1, :]) / x_size
+  y_loss = tf.nn.l2_loss(
+      stylized_inputs[:, 1:, :, :] - stylized_inputs[:, :-1, :, :]) / y_size
+  x_loss = tf.nn.l2_loss(
+      stylized_inputs[:, :, 1:, :] - stylized_inputs[:, :, :-1, :]) / x_size
   loss = (y_loss + x_loss) / tf.to_float(batch_size)
   weighted_loss = loss * total_variation_weight
-  return weighted_loss, {'total_variation_loss': loss,
-                         'weighted_total_variation_loss': weighted_loss}
+  return weighted_loss, {
+      'total_variation_loss': loss,
+      'weighted_total_variation_loss': weighted_loss
+  }
 
 
 def gram_matrix(feature_maps):

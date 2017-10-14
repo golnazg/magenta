@@ -117,3 +117,4 @@ def style_loss(style_end_points, stylized_end_points, style_weights):
   style_loss_dict['total_style_loss'] = total_style_loss
 
   return total_style_loss, style_loss_dict
+

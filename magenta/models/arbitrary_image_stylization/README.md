@@ -26,7 +26,8 @@ Set up your [Magenta environment](/README.md).
 # Stylizing an Image using a pre-trained model
 Download our pre-trained model:
 
-* [Pretrained on PNB and DTD training images](TODO: add the link)
+* [Pretrained on PNB and DTD training
+  images](https://storage.googleapis.com/download.magenta.tensorflow.org/models/arbitrary_style_transfer.tar.gz)
 
 
 In order to stylize an image according to an arbitrary painting, run the
@@ -36,7 +37,7 @@ following command.
 # To use images in style_images and content_images directories.
 $ cd /path/to/arbitrary_image_stylization
 $ arbitrary_image_stylization_with_weights \
-  --checkpoint=/path/to/style_transfer_model.ckpt \
+  --checkpoint=/path/to/arbitrary_style_transfer/model.ckpt \
   --output_dir=/path/to/output_dir \
   --style_images_paths=style_images/*.jpg \
   --content_images_paths=content_images/*.jpg \
@@ -79,7 +80,7 @@ $ cd /path/to/arbitrary_image_stylization
 # corresponds to a fully stylized photograph.
 $ INTERPOLATION_WEIGHTS='[0.0 0.2 0.4 0.6 0.8 1.0]'
 $ arbitrary_image_stylization_with_weights \
-  --checkpoint=/path/to/style_transfer_model.ckpt \
+  --checkpoint=/path/to/arbitrary_style_transfer/model.ckpt \
   --output_dir=/path/to/output_dir \
   --style_images_paths=style_images/*.jpg \
   --content_images_paths=content_images/statue_of_liberty_sq.jpg \
