@@ -82,6 +82,39 @@ def total_loss(content_inputs, style_inputs, stylized_inputs, content_weights,
 
   return loss, loss_dict
 
+def content_loss(end_points, stylized_end_points, content_weights):
+  """Content loss.
+
+  Args:
+    end_points: dict mapping VGG16 layer names to their corresponding Tensor
+        value for the original input.
+    stylized_end_points: dict mapping VGG16 layer names to their corresponding
+        Tensor value for the stylized input.
+    content_weights: dict mapping layer names to their associated content loss
+        weight. Keys that are missing from the dict won't have their content
+        loss computed.
+
+  Returns:
+    Tensor for the total content loss, dict mapping loss names to losses.
+  """
+  total_content_loss = np.float32(0.0)
+  content_loss_dict = {}
+
+  for name, weight in content_weights.iteritems():
+    loss = tf.reduce_mean(
+        (end_points[name] - stylized_end_points[name]) ** 2)
+    weighted_loss = weight * loss
+
+    content_loss_dict['content_loss/' + name] = loss
+    content_loss_dict['weighted_content_loss/' + name] = weighted_loss
+    total_content_loss += weighted_loss
+
+  content_loss_dict['total_content_loss'] = total_content_loss
+
+  return total_content_loss, content_loss_dict
+
+
+
 
 def style_loss(style_end_points, stylized_end_points, style_weights):
   """Style loss.
@@ -102,17 +135,14 @@ def style_loss(style_end_points, stylized_end_points, style_weights):
   style_loss_dict = {}
 
   for name, weight in style_weights.iteritems():
-    # Reducing over all but the batch axis before multiplying with the style
-    # weights allows to use multiple sets of style weights in a single batch.
     loss = tf.reduce_mean(
         (learning_utils.gram_matrix(stylized_end_points[name]) -
-         learning_utils.gram_matrix(style_end_points[name])) ** 2, [1, 2])
-    weighted_style_loss = tf.reduce_mean(weight * loss)
-    loss = tf.reduce_mean(loss)
+         learning_utils.gram_matrix(style_end_points[name])) ** 2)
+    weighted_loss = weight * loss
 
     style_loss_dict['style_loss/' + name] = loss
-    style_loss_dict['weighted_style_loss/' + name] = weighted_style_loss
-    total_style_loss += weighted_style_loss
+    style_loss_dict['weighted_style_loss/' + name] = weighted_loss
+    total_style_loss += weighted_loss
 
   style_loss_dict['total_style_loss'] = total_style_loss
 

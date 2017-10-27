@@ -139,29 +139,31 @@ To train your own model, you need to have the following:
    repository.
 
 A first step is to prepare the style images and create a TFRecord file.
-The following command may be used for creating the TFRecord file.
 To train and evaluate the model on different set of style images, you need
 to prepare different TFRecord for each of them. Eg. use the PBN and DTD
 training images to create the training dataset and use a subset of PBN
 and DTD testing images for testing dataset.
 
+The following command may be used to download DTD images and create a TFRecord
+file from images in cobwebbed category.
+
 ```bash
+$ cd /path/to/dataset
+$ path=$(pwd)
+$ wget https://www.robots.ox.ac.uk/~vgg/data/dtd/download/dtd-r1.0.1.tar.gz
+$ tar -xvzf dtd-r1.0.1.tar.gz
+$ STYLE_IMAGES_PATHS="$path"/dtd/images/cobwebbed/*.jpg
+$ RECORDIO_PATH="$path"/dtd_cobwebbed.tfrecord
+
 $ image_stylization_create_dataset \
-    --style_files=/path/to/style/images/*.jpg \
-    --output_file=/tmp/arbitrary_image_stylization/style_images.tfrecord
-    --compute_gram_matrices=False
+    --style_files=$STYLE_IMAGES_PATHS \
+    --output_file=$RECORDIO_PATH \
+    --compute_gram_matrices=False \
+    --logtostderr
 ```
 
-Then, to train a model use the following command.
-
-We trained our model on PBN and DTD training images for about 3M steps.
-For a smaller dataset you will need smaller number of steps, but the model
-will have less generalization to unobserved styles.
-We trained our model using 8 GPUS. But, it's possible to train the model
-using only one gpu. Just it will talke more time. For training on different
-training data you may need to change the style and content weights. Eg. when
-you have stronger textures, you will need a higher content weights.
-You may also need to change the learning rate.
+Then, to train a model on dtd_cobwebbed.tfrecord without data augmentation
+use the following command. 
 
 ```bash
 logdir=/path/to/logdir
@@ -170,12 +172,63 @@ $ arbitrary_image_stylization_train \
       --imagenet_data_dir=/path/to/imagenet-2012-tfrecord \
       --vgg_checkpoint=/path/to/vgg-checkpoint \
       --inception_v3_checkpoint=/path/to/inception-v3-checkpoint \
-      --style_dataset_file=/tmp/arbitrary_image_stylization/style_images.tfrecord
+      --style_dataset_file=$RECORDIO_PATH \
+      --train_dir="$logdir"/train_dir \
+      --content_weights={\"vgg_16/conv3\":2.0} \
+      --random_style_image_size=False \
+      --augment_style_images=False \
+      --center_crop=True \
+      --logtostderr
+```
+To see the progress of training, run TensorBoard on the resulting log directory:
+
+```bash
+$ tensorboard --logdir="$logdir"
+```
+
+Since dtd_cobwebbed.tfrecord contains only 120
+images, training takes only a few hours and it's a good test
+to make sure everything work well.
+Example of stylization results over a few cobwebbed training
+style images (cobwebbed_0129.jpg, cobwebbed_0116.jpg, cobwebbed_0053.jpg,
+cobwebbed_0057.jpg, cobwebbed_0044.jpg, cobwebbed_0059.jpg of):
+
+<p align='center'>
+  <img src='images/stylized_cobwebbed_images/eiffel_tower_stylized_cobwebbed_0129_0.jpg' width="140px">
+  <img src='images/stylized_cobwebbed_images/eiffel_tower_stylized_cobwebbed_0116_0.jpg' width="140px">
+  <img src='images/stylized_cobwebbed_images/eiffel_tower_stylized_cobwebbed_0053_0.jpg' width="140px">
+  <img src='images/stylized_cobwebbed_images/eiffel_tower_stylized_cobwebbed_0057_0.jpg' width="140px">
+  <img src='images/stylized_cobwebbed_images/eiffel_tower_stylized_cobwebbed_0044_0.jpg' width="140px">
+
+  <img src='images/stylized_cobwebbed_images/eiffel_tower_stylized_cobwebbed_0059_0.jpg' width="140px">
+</p>
+
+To train a model with a good generalization over unobserved style images you
+need to train the model on a large training dataset (See Figure 5 of paper).
+We trained our model on PBN and DTD training images with data augmentation
+over style images for about 3M steps. We trained our model using 8 GPUS.
+But, it's possible to train the model using only one gpu. Just it will take
+more time.
+To train a model with data augmentation over style images use the following
+command.
+
+```bash
+logdir=/path/to/logdir
+$ arbitrary_image_stylization_train \
+      --batch_size=8 \
+      --imagenet_data_dir=/path/to/imagenet-2012-tfrecord \
+      --vgg_checkpoint=/path/to/vgg-checkpoint \
+      --inception_v3_checkpoint=/path/to/inception-v3-checkpoint \
+      --style_dataset_file=/path/to/style_images.tfrecord
       --train_dir="$logdir"/train_dir
+      --random_style_image_size=True \
+      --augment_style_images=True \
+      --center_crop=False \
+      --logtostderr
 ```
 
 
-To run evaluation job use the following command.
+To run evaluation job on test style images use the following command.
 
 Note that if you are running the training job on a GPU, then you can
 run a separate evaluation job on the CPU by setting CUDA_VISIBLE_DEVICES=' ':
@@ -189,8 +242,3 @@ $CUDA_VISIBLE_DEVICES= arbitrary_image_stylization_evaluate \
       --eval_dir="$logdir"/eval_dir
 ```
 
-To see the progress of training, run TensorBoard on the resulting log directory:
-
-```bash
-$ tensorboard --logdir="$logdir"
-```
